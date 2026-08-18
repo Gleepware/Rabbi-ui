@@ -4,7 +4,7 @@ import { useState } from "react";
 import ContentPanel from "../components/content-panel";
 import Navbar from "../components/navbar";
 import ReaderPage from "../components/reader-page";
-import Questions from "../components/questions";
+import Questions from "../components/questions/questions";
 
 const Error = () => {
   return <>
@@ -25,6 +25,8 @@ const activities = {
   "Exit": () => Placeholder
 }
 
+const menuActivities = Object.keys(activities).filter(v => v != "Reader")
+
 export default function Home() {
   const [activity, setActivity] = useState("Reader")
   const ActiveComponent = (activities[activity] || (() => Error))()
@@ -40,7 +42,7 @@ export default function Home() {
 
   return (
     <>
-      <Navbar options={Object.keys(activities)} onSelect={(item) => switchActivity(item)} />
+      <Navbar options={menuActivities} onSelect={(item) => switchActivity(item)} />
       <ContentPanel>
         <ActiveComponent onClose={() => handleCloseEvent()}/>
       </ContentPanel>

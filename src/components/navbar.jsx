@@ -1,9 +1,23 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 
 export default function Navbar({ options, onSelect }) {
   const [menuOpen, setMenuOpen] = useState(false);
+  const navRef = useRef(null);
+
+  useEffect(() => {
+    if (!menuOpen) return;
+
+    const handleClickOutside = (e) => {
+      if (navRef.current && !navRef.current.contains(e.target)) {
+        setMenuOpen(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, [menuOpen]);
 
   const handleMenuItem = (item) => {
     onSelect?.(item)
@@ -11,7 +25,7 @@ export default function Navbar({ options, onSelect }) {
   }
 
   return (
-    <nav className="navbar">
+    <nav ref={navRef} className="navbar">
       <button
         className="navbar-hamburger"
         aria-label="Menu"

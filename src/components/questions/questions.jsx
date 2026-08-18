@@ -1,5 +1,8 @@
 "use client";
 
+import ContentPanel from "../content-panel";
+import Conversation from "./conversation";
+
 export default function Questions({ onClose }) {
   return (
     <div className="questions-container">
@@ -12,7 +15,7 @@ export default function Questions({ onClose }) {
         <button className="questions-btn">New</button>
         <button className="questions-btn" onClick={onClose}>Close</button>
       </div>
-      <div className="questions-content"></div>
+      <Conversation></Conversation>
     </div>
   );
 }
