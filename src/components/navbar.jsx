@@ -2,8 +2,13 @@
 
 import { useState } from "react";
 
-export default function Navbar({ onAbout, onExit }) {
+export default function Navbar({ options, onSelect }) {
   const [menuOpen, setMenuOpen] = useState(false);
+
+  const handleMenuItem = (item) => {
+    onSelect?.(item)
+    setMenuOpen(false)
+  }
 
   return (
     <nav className="navbar">
@@ -20,12 +25,11 @@ export default function Navbar({ onAbout, onExit }) {
       </button>
       {menuOpen && (
         <ul className="navbar-menu">
-          <li>
-            <button className="navbar-menu-item" onClick={onAbout}>about</button>
-          </li>
-          <li>
-            <button className="navbar-menu-item" onClick={onExit}>exit</button>
-          </li>
+          {options.map((item, idx) => (
+            <li key={idx}>
+              <button className="navbar-menu-item" onClick={() => handleMenuItem(item)}>{item}</button>
+            </li>
+          ))}
         </ul>
       )}
     </nav>

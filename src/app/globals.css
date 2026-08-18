@@ -82,3 +82,50 @@ body {
   background: var(--foreground);
   color: var(--background);
 }
+
+.questions-container {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.questions-nav {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 0 4px;
+  height: 2rem;
+  border-bottom: 1px solid var(--foreground);
+  background: var(--background);
+  flex-shrink: 0;
+}
+
+.questions-select {
+  flex: 1;
+  min-width: 0;
+  padding: 2px 4px;
+  font-size: 16px;
+  border: 1px solid var(--foreground);
+  background: var(--background);
+  color: var(--foreground);
+}
+
+.questions-btn {
+  padding: 2px 8px;
+  font-size: 16px;
+  border: 1px solid var(--foreground);
+  background: var(--background);
+  color: var(--foreground);
+  cursor: pointer;
+}
+
+.questions-btn:active {
+  background: var(--foreground);
+  color: var(--background);
+}
+
+.questions-content {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+}

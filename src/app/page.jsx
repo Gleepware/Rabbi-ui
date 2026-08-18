@@ -1,13 +1,48 @@
+"use client";
+
+import { useState } from "react";
 import ContentPanel from "../components/content-panel";
 import Navbar from "../components/navbar";
 import ReaderPage from "../components/reader-page";
+import Questions from "../components/questions";
+
+const Error = () => {
+  return <>
+    Unexpected error.
+  </>
+}
+
+const Placeholder = () => {
+  return <>
+    Under Construction
+  </>
+}
+
+const activities = {
+  "Reader": () => ReaderPage,
+  "Questions": () => Questions,
+  "About Rabbi": () => Placeholder,
+  "Exit": () => Placeholder
+}
 
 export default function Home() {
+  const [activity, setActivity] = useState("Reader")
+  const ActiveComponent = (activities[activity] || (() => Error))()
+
+  const switchActivity = (newActivity) => {
+    setActivity(newActivity)
+  }
+
+  const handleCloseEvent = () => {
+    if (activity !== "Reader") setActivity("Reader")
+  }
+
+
   return (
     <>
-      <Navbar></Navbar>
+      <Navbar options={Object.keys(activities)} onSelect={(item) => switchActivity(item)} />
       <ContentPanel>
-        <ReaderPage />
+        <ActiveComponent onClose={() => handleCloseEvent()}/>
       </ContentPanel>
     </>
   );
