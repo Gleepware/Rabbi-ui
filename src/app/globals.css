@@ -50,3 +50,33 @@ body {
   cursor: pointer;
   color: var(--foreground);
 }
+
+.navbar-menu {
+  position: absolute;
+  top: 48px;
+  left: 0;
+  margin: 0;
+  padding: 4px 0;
+  list-style: none;
+  background: var(--background);
+  border-bottom: 1px solid var(--foreground);
+  min-width: 160px;
+  z-index: 100;
+}
+
+.navbar-menu-item {
+  display: block;
+  width: 100%;
+  padding: 10px 16px;
+  border: none;
+  background: none;
+  color: var(--foreground);
+  text-align: left;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+.navbar-menu-item:active {
+  background: var(--foreground);
+  color: var(--background);
+}
