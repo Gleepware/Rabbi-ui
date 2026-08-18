@@ -1,0 +1,16 @@
+{
+  "appId": "com.gleepware.rabbi",
+  "appName": "Rabbi",
+  "webDir": "out",
+  "server": {
+    "androidScheme": "https"
+  },
+  "plugins": {
+    "SplashScreen": {
+      "launchAutoHide": true,
+      "androidScaleType": "CENTER_CROP",
+      "showSpinner": false,
+      "backgroundColor": "#1a1a2e"
+    }
+  }
+}
