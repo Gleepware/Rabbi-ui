@@ -41,7 +41,7 @@ export default function RootLayout({ children }) {
       <head>
         <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
       </head>
-      <body className="h-full overflow-hidden flex flex-col">
+      <body className="h-full overflow-hidden flex flex-col pt-8">
         <ServiceWorkerRegistration />
         {children}
       </body>
