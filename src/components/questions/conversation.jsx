@@ -1,5 +1,6 @@
 import { useState, useRef, useEffect } from "react";
 import ContentPanel from "../content-panel";
+import { askQuestion } from "../../services/conversation-service";
 
 export default function Conversation({ conversation }) {
   const [messages, setMessages] = useState([]);
@@ -14,11 +15,13 @@ export default function Conversation({ conversation }) {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
-  function handleSend() {
+  async function handleSend() {
     const text = input.trim();
     if (!text) return;
     setMessages((prev) => [...prev, { role: "user", text }]);
     setInput("");
+    const exchange = await askQuestion(text, conversation?.id);
+    setMessages((prev) => [...prev, { role: "assistant", text: exchange.answer }]);
   }
 
   function handleKeyDown(e) {
