@@ -4,7 +4,7 @@ import { useState } from "react";
 import ContentPanel from "../components/content-panel";
 import Navbar from "../components/navbar";
 import ReaderPage from "../components/reader-page";
-import Questions from "../components/questions/questions";
+import Questions from "../components/questions/conversations";
 
 const Error = () => {
   return <>
@@ -28,7 +28,7 @@ const activities = {
 const menuActivities = Object.keys(activities).filter(v => v != "Reader")
 
 export default function Home() {
-  const [activity, setActivity] = useState("Reader")
+  const [activity, setActivity] = useState("Questions")
   const ActiveComponent = (activities[activity] || (() => Error))()
 
   const switchActivity = (newActivity) => {

@@ -1,10 +1,14 @@
 import { useState, useRef, useEffect } from "react";
 import ContentPanel from "../content-panel";
 
-export default function Conversation() {
+export default function Conversation({ conversation }) {
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState("");
   const messagesEndRef = useRef(null);
+
+  useEffect(() => {
+    setMessages(conversation?.messages ?? []);
+  }, [conversation]);
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });

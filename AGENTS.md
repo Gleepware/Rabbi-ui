@@ -17,3 +17,4 @@ This block is written and re-added by `next dev` — verify at `node_modules/nex
 - This is a front-end only application — no server-side code, no API routes, no Node.js APIs.
 - React components go in the `src/components` folder.
 - This application is built for mobile phone screens. All UI should be mobile-first.
+- Avoid reading files for information already in memory.
