@@ -21,6 +21,13 @@
       "webRoot": "${workspaceFolder}/src",
       "sourceMapPathOverrides": {
         "webpack://src/*": "${webRoot}/*"
+      },
+      "firefoxArgs": ["--devtools"],
+      "profileDir": "${workspaceFolder}/.vscode/firefox-profile",
+      "keepProfileChanges": true,
+      "preferences": {
+        "devtools.toolbox.host": "window",
+        "browser.taskbarTabs.enabled": false
       }
     }
   ],
