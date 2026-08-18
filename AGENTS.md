@@ -10,6 +10,7 @@ This block is written and re-added by `next dev` — verify at `node_modules/nex
 
 # Project Rules
 
+- **High priority**: Make the least possible changes needed to achieve the goal.
 - Pure JavaScript only — no TypeScript (.ts, .tsx). Use .js and .jsx extensions.
 - Use ES6 module syntax (import/export). Do NOT use require().
 - React components must use the .jsx extension.
