@@ -35,7 +35,10 @@ export default function Questions({ onClose }) {
         <button className="questions-btn">New</button>
         <button className="questions-btn" onClick={onClose}>Close</button>
       </div>
-      <Conversation conversation={selectedConversation}></Conversation>
+      <Conversation conversation={selectedConversation} onConversationCreated={(newConversation) => {
+        setConversations((prev) => [...prev, newConversation]);
+        setSelectedId(newConversation.id);
+      }}></Conversation>
     </div>
   );
 }

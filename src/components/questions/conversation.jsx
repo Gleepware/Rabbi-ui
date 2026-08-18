@@ -1,8 +1,8 @@
 import { useState, useRef, useEffect } from "react";
 import ContentPanel from "../content-panel";
-import { askQuestion } from "../../services/conversation-service";
+import { askQuestion, createConversation } from "../../services/conversation-service";
 
-export default function Conversation({ conversation }) {
+export default function Conversation({ conversation, onConversationCreated }) {
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState("");
   const messagesEndRef = useRef(null);
@@ -20,7 +20,16 @@ export default function Conversation({ conversation }) {
     if (!text) return;
     setMessages((prev) => [...prev, { role: "user", text }]);
     setInput("");
-    const exchange = await askQuestion(text, conversation?.id);
+
+    let conversationId = conversation?.id;
+    if (!conversationId) {
+      const title = text.substring(0, 40);
+      const newConversation = await createConversation({ title });
+      conversationId = newConversation.id;
+      if (onConversationCreated) onConversationCreated(newConversation);
+    }
+
+    const exchange = await askQuestion(text, conversationId);
     setMessages((prev) => [...prev, { role: "assistant", text: exchange.answer }]);
   }
 
