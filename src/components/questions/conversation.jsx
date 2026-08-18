@@ -1,8 +1,8 @@
 import { useState, useRef, useEffect } from "react";
 import ContentPanel from "../content-panel";
-import { askQuestion, createConversation } from "../../services/conversation-service";
+import { askQuestion, createConversation, updateConversation } from "../../services/conversation-service";
 
-export default function Conversation({ conversation, onConversationCreated }) {
+export default function Conversation({ conversation, onConversationCreated, onConversationUpdated }) {
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState("");
   const messagesEndRef = useRef(null);
@@ -31,6 +31,12 @@ export default function Conversation({ conversation, onConversationCreated }) {
 
     const exchange = await askQuestion(text, conversationId);
     setMessages((prev) => [...prev, { role: "assistant", text: exchange.answer }]);
+
+    if (conversation && !conversation.title) {
+      const title = text.substring(0, 40);
+      const updated = await updateConversation(conversationId, { title });
+      if (updated && onConversationUpdated) onConversationUpdated(updated);
+    }
   }
 
   function handleKeyDown(e) {
