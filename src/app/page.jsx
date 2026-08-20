@@ -3,7 +3,7 @@
 import ContentPanel from "../components/content-panel";
 import Navbar from "../components/navbar";
 import ReaderPage from "../components/reader-page";
-import Questions from "../components/questions/conversations";
+import Conversation from "../components/questions/conversations";
 import { useReaderContext } from "../contexts/AppContext";
 
 const Error = () => {
@@ -20,12 +20,16 @@ const Placeholder = () => {
 
 const activities = {
   "Reader": ReaderPage,
-  "Questions": Questions,
+  "Conversation": Conversation,
   "About Rabbi": Placeholder,
   "Exit": Placeholder
 }
 
-const menuActivities = Object.keys(activities).filter(v => v != "Reader")
+const menuActivities = [
+  { key: "Conversation", label: "Manage Conversations" },
+  { key: "About Rabbi", label: "About Rabbi" },
+  { key: "Exit", label: "Exit" }
+]
 
 export default function Home() {
   const { activity, setActivity } = useReaderContext();

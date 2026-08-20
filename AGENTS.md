@@ -18,3 +18,4 @@ This block is written and re-added by `next dev` — verify at `node_modules/nex
 - React components go in the `src/components` folder.
 - This application is built for mobile phone screens. All UI should be mobile-first.
 - Avoid reading files for information already in memory.
+- When automatically creating branches, name them `opencode/{task}` (e.g. `opencode/add-conversation-icon`).
