@@ -1,12 +1,11 @@
 "use client";
 
 import { useEffect } from "react";
-import ContentPanel from "../content-panel";
 import Conversation from "./conversation";
 import { getConversations, createConversation } from "../../services/conversation-service";
 import { useConversationsContext } from "../../contexts/AppContext";
 
-export default function Questions({ onClose }) {
+export default function Conversations({ onClose }) {
   const {
     conversations,
     selectedId,

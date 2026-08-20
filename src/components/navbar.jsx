@@ -42,9 +42,9 @@ export default function Navbar({ options, onSelect }) {
       <button
         className="navbar-conversation"
         aria-label="Open Conversation"
-        onClick={() => setActivity(activity === "Conversation" ? "Reader" : "Conversation")}
+        onClick={() => setActivity(activity === "Reader" ? "Conversation" : "Reader")}
       >
-        {activity === "Conversation" ? (
+        {activity === "Reader" ? (
           <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2">
             <path d="M4 4a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v16a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V4z" />
             <line x1="7" y1="9" x2="17" y2="9" />

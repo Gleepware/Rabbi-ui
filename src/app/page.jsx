@@ -1,9 +1,11 @@
 "use client";
 
+import { useRef } from "react";
 import ContentPanel from "../components/content-panel";
 import Navbar from "../components/navbar";
 import ReaderPage from "../components/reader-page";
 import Conversation from "../components/questions/conversations";
+import Settings from "../components/settings";
 import { useReaderContext } from "../contexts/AppContext";
 
 const Error = () => {
@@ -21,26 +23,30 @@ const Placeholder = () => {
 const activities = {
   "Reader": ReaderPage,
   "Conversation": Conversation,
-  "About Rabbi": Placeholder,
-  "Exit": Placeholder
+  "Settings": Settings,
+  "About Rabbi": Placeholder
 }
 
 const menuActivities = [
-  { key: "Conversation", label: "Manage Conversations" },
+  { key: "Settings", label: "Settings" },
   { key: "About Rabbi", label: "About Rabbi" },
   { key: "Exit", label: "Exit" }
 ]
 
 export default function Home() {
   const { activity, setActivity } = useReaderContext();
+  const previousActivity = useRef("Reader");
   const ActiveComponent = activities[activity] ?? Error;
 
   const switchActivity = (newActivity) => {
+    if (newActivity === "Settings") {
+      previousActivity.current = activity;
+    }
     setActivity(newActivity)
   }
 
   const handleCloseEvent = () => {
-    if (activity !== "Reader") setActivity("Reader")
+    setActivity(previousActivity.current)
   }
 
 
