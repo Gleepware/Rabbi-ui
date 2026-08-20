@@ -43,8 +43,8 @@ export default function Conversations({ onClose }) {
             </option>
           ))}
         </select>
-        <button className="questions-btn" onClick={handleNew}>New</button>
-        <button className="questions-btn" onClick={onClose}>Close</button>
+        <button className="standard-btn" onClick={handleNew}>New</button>
+        <button className="standard-btn" onClick={onClose}>Close</button>
       </div>
       <Conversation conversation={selectedConversation} onConversationCreated={(newConversation) => {
         addConversation(newConversation);
