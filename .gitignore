@@ -43,3 +43,4 @@ next-env.d.ts
 # capacitor
 android/
 ios/
+.vscode/firefox-profile/

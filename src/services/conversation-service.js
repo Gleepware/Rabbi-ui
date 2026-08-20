@@ -3,7 +3,13 @@ const NEXT_ID_KEY = "conversations-next-id";
 
 function loadStore() {
   const raw = localStorage.getItem(STORAGE_KEY);
-  return raw ? JSON.parse(raw) : [];
+  if (!raw) return [];
+  try {
+    const parsed = JSON.parse(raw);
+    return Array.isArray(parsed) ? parsed : [];
+  } catch {
+    return [];
+  }
 }
 
 function saveStore(store) {

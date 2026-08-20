@@ -3,12 +3,17 @@ import ContentPanel from "../content-panel";
 import { askQuestion, createConversation, updateConversation } from "../../services/conversation-service";
 
 export default function Conversation({ conversation, onConversationCreated, onConversationUpdated }) {
-  const [messages, setMessages] = useState([]);
+  const [messages, setMessages] = useState(conversation?.messages ?? []);
   const [input, setInput] = useState("");
   const messagesEndRef = useRef(null);
+  const prevConversationIdRef = useRef(null);
 
   useEffect(() => {
-    setMessages(conversation?.messages ?? []);
+    const currentId = conversation?.id ?? null;
+    if (currentId !== prevConversationIdRef.current) {
+      setMessages(conversation?.messages ?? []);
+      prevConversationIdRef.current = currentId;
+    }
   }, [conversation]);
 
   useEffect(() => {

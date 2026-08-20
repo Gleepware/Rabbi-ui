@@ -1,10 +1,10 @@
 "use client";
 
-import { useState } from "react";
 import ContentPanel from "../components/content-panel";
 import Navbar from "../components/navbar";
 import ReaderPage from "../components/reader-page";
 import Questions from "../components/questions/conversations";
+import { useReaderContext } from "../contexts/AppContext";
 
 const Error = () => {
   return <>
@@ -19,17 +19,17 @@ const Placeholder = () => {
 }
 
 const activities = {
-  "Reader": () => ReaderPage,
-  "Questions": () => Questions,
-  "About Rabbi": () => Placeholder,
-  "Exit": () => Placeholder
+  "Reader": ReaderPage,
+  "Questions": Questions,
+  "About Rabbi": Placeholder,
+  "Exit": Placeholder
 }
 
 const menuActivities = Object.keys(activities).filter(v => v != "Reader")
 
 export default function Home() {
-  const [activity, setActivity] = useState("Reader")
-  const ActiveComponent = (activities[activity] || (() => Error))()
+  const { activity, setActivity } = useReaderContext();
+  const ActiveComponent = activities[activity] ?? Error;
 
   const switchActivity = (newActivity) => {
     setActivity(newActivity)

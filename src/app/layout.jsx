@@ -1,6 +1,7 @@
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import ServiceWorkerRegistration from "../components/service-worker-registration";
+import { AppProvider } from "../contexts/AppContext";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -43,7 +44,7 @@ export default function RootLayout({ children }) {
       </head>
       <body className="h-full overflow-hidden flex flex-col pt-8">
         <ServiceWorkerRegistration />
-        {children}
+        <AppProvider>{children}</AppProvider>
       </body>
     </html>
   );

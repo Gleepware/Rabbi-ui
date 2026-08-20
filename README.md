@@ -2,6 +2,8 @@
 ## TODO:
 
 ### UI
+* Keep state across loads
+
 * add conversation management
 * add bible selection UI
   * make it responsive

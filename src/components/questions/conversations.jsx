@@ -1,28 +1,34 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useEffect } from "react";
 import ContentPanel from "../content-panel";
 import Conversation from "./conversation";
 import { getConversations, createConversation } from "../../services/conversation-service";
+import { useConversationsContext } from "../../contexts/AppContext";
 
 export default function Questions({ onClose }) {
-  const [conversations, setConversations] = useState([]);
-  const [selectedId, setSelectedId] = useState(null);
+  const {
+    conversations,
+    selectedId,
+    setConversations,
+    addConversation,
+    selectConversation,
+  } = useConversationsContext();
 
   const selectedConversation = conversations.find((c) => c.id === selectedId) ?? null;
 
   const handleNew = async () => {
     const newConversation = await createConversation({ title: "" });
-    setConversations((prev) => [...prev, newConversation]);
-    setSelectedId(newConversation.id);
+    addConversation(newConversation);
+    selectConversation(newConversation.id);
   };
 
   useEffect(() => {
     getConversations().then((data) => {
       setConversations(data);
-      if (data.length > 0) setSelectedId(data[0].id);
+      if (data.length > 0) selectConversation(data[0].id);
     });
-  }, []);
+  }, [setConversations, selectConversation]);
 
   return (
     <div className="questions-container">
@@ -30,7 +36,7 @@ export default function Questions({ onClose }) {
         <select
           className="questions-select"
           value={selectedId ?? ""}
-          onChange={(e) => setSelectedId(e.target.value)}
+          onChange={(e) => selectConversation(e.target.value)}
         >
           {conversations.map((c) => (
             <option key={c.id} value={c.id}>
@@ -42,10 +48,10 @@ export default function Questions({ onClose }) {
         <button className="questions-btn" onClick={onClose}>Close</button>
       </div>
       <Conversation conversation={selectedConversation} onConversationCreated={(newConversation) => {
-        setConversations((prev) => [...prev, newConversation]);
-        setSelectedId(newConversation.id);
+        addConversation(newConversation);
+        selectConversation(newConversation.id);
       }} onConversationUpdated={(updated) => {
-        setConversations((prev) => prev.map((c) => c.id === updated.id ? updated : c));
+        // handled via context in child
       }}></Conversation>
     </div>
   );
