@@ -28,7 +28,7 @@ const activities = {
 const menuActivities = Object.keys(activities).filter(v => v != "Reader")
 
 export default function Home() {
-  const [activity, setActivity] = useState("Questions")
+  const [activity, setActivity] = useState("Reader")
   const ActiveComponent = (activities[activity] || (() => Error))()
 
   const switchActivity = (newActivity) => {
