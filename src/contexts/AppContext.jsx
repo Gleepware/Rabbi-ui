@@ -1,6 +1,6 @@
 "use client";
 
-import { createContext, useContext, useReducer, useEffect, useCallback, useRef } from "react";
+import { createContext, useContext, useReducer, useEffect, useCallback, useRef, useState } from "react";
 
 const STORAGE_KEY = "appState";
 
@@ -85,31 +85,34 @@ const AppContext = createContext(null);
 
 export function AppProvider({ children }) {
   const [state, dispatch] = useReducer(appReducer, initialState);
-  const hydrated = useRef(false);
+  const [hydrated, setHydrated] = useState(false);
+  const hydratedRef = useRef(false);
 
   useEffect(() => {
-    if (!hydrated.current) {
-      hydrated.current = true;
+    if (!hydratedRef.current) {
+      hydratedRef.current = true;
       const stored = readStorage();
       if (stored) {
         dispatch({ type: "HYDRATE", payload: stored });
       }
+      setHydrated(true);
     } else {
       writeStorage(state);
     }
   }, [state]);
 
   return (
-    <AppContext.Provider value={{ state, dispatch }}>
+    <AppContext.Provider value={{ state, dispatch, hydrated }}>
       {children}
     </AppContext.Provider>
   );
 }
 
 export function useReaderContext() {
-  const { state, dispatch } = useContext(AppContext);
+  const { state, dispatch, hydrated } = useContext(AppContext);
   return {
     activity: state.activity,
+    hydrated,
     setActivity: useCallback((v) => dispatch({ type: "SET_ACTIVITY", payload: v }), [dispatch]),
   };
 }

@@ -34,7 +34,7 @@ const menuActivities = [
 ]
 
 export default function Home() {
-  const { activity, setActivity } = useReaderContext();
+  const { activity, setActivity, hydrated } = useReaderContext();
   const previousActivity = useRef("Reader");
   const ActiveComponent = activities[activity] ?? Error;
 
@@ -54,7 +54,7 @@ export default function Home() {
     <>
       <Navbar options={menuActivities} onSelect={(item) => switchActivity(item)} />
       <ContentPanel>
-        <ActiveComponent onClose={() => handleCloseEvent()}/>
+        {hydrated ? <ActiveComponent onClose={() => handleCloseEvent()} /> : null}
       </ContentPanel>
     </>
   );
