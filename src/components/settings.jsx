@@ -1,9 +1,9 @@
 "use client";
 
-import { useEffect, useState } from "react";
 import ConversationsSettings from "./settings/manage-conversations";
 import AccountSettings from "./settings/account";
 import TranslationSettings from './settings/translations'
+import { useNavigationContext } from "../contexts/AppContext";
 
 const menuOptions = {
   "Conversations": { label: "Manage Conversations", component: ConversationsSettings },
@@ -11,21 +11,16 @@ const menuOptions = {
   "Account": { label: "Account", component: AccountSettings },
 };
 
+const SETTINGS_PANEL_KEY = "settingsPanel";
 
 export default function Settings({ onClose }) {
-  const [activity, setActivity] = useState(null);
+  const { ui, setUiState } = useNavigationContext();
+  const activity = ui[SETTINGS_PANEL_KEY] ?? null;
   const ActiveComponent = activity ? (menuOptions[activity]?.component ?? null) : null;
 
-  const selectMenuItem = item => {
-    console.log(`Switching to ${item}`)
-    setActivity(item)
-  }
+  const selectMenuItem = item => setUiState(SETTINGS_PANEL_KEY, item)
 
-  useEffect(() => {
-    console.log(`Activity: ${activity}`)
-  })
-
-  const returnToMenu = () => selectMenuItem()
+  const returnToMenu = () => selectMenuItem(null)
 
   return (
     <div className="questions-container">
