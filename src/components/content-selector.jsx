@@ -152,7 +152,19 @@ export default function ContentSelector() {
             <path d="M15 5l-7 7 7 7z" />
           </svg>
         </button>
-        <span className="chapter-pill-label">{chapter}</span>
+        <select
+          className="content-selector-select"
+          value={chapter}
+          onChange={(e) => setReader({ chapter: Number(e.target.value) })}
+          aria-label="Chapter"
+          disabled={!bookId}
+        >
+          {Array.from({ length: chapterCount }, (_, i) => i + 1).map((n) => (
+            <option key={n} value={n}>
+              {n}
+            </option>
+          ))}
+        </select>
         <button
           className="chapter-pill-btn"
           aria-label="Next chapter"

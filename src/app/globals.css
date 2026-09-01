@@ -304,6 +304,11 @@ body {
   flex-shrink: 0;
 }
 
+.chapter-pill .content-selector-select {
+  border: none;
+  padding-top: 3px;
+}
+
 .chapter-pill-btn {
   display: flex;
   align-items: center;
