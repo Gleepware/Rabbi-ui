@@ -19,3 +19,4 @@ This block is written and re-added by `next dev` — verify at `node_modules/nex
 - This application is built for mobile phone screens. All UI should be mobile-first.
 - Avoid reading files for information already in memory.
 - When automatically creating branches, name them `opencode/{task}` (e.g. `opencode/add-conversation-icon`).
+- When creating a PR, do NOT make any code changes — only create the PR. Do not fix formatting, whitespace, or any other drive-by cleanups.
