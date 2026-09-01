@@ -17,6 +17,8 @@ export default function ContentSelector() {
   const [spaceEm, setSpaceEm] = useState(0);
 
   const containerRef = useRef(null);
+  const readerRef = useRef(reader);
+  readerRef.current = reader;
 
   const selectedTranslation =
     translations.find((t) => t.id === translationId) ?? null;
@@ -29,7 +31,7 @@ export default function ContentSelector() {
   useEffect(() => {
     getTranslations().then((list) => {
       setTranslations(list);
-      if (!translationId && list.length > 0) {
+      if (!readerRef.current.translationId && list.length > 0) {
         setReader({ translationId: list[0].id, bookId: null, chapter: 1 });
       }
     });
@@ -41,7 +43,8 @@ export default function ContentSelector() {
     getTranslation(translationId).then((translation) => {
       if (!translation) return;
       setBooks(translation.books);
-      if (translation.books.length > 0 && !translation.books.some((b) => b.id === bookId)) {
+      const currentBookId = readerRef.current.bookId;
+      if (translation.books.length > 0 && !translation.books.some((b) => b.id === currentBookId)) {
         setReader({ bookId: translation.books[0].id, chapter: 1 });
       }
     });
