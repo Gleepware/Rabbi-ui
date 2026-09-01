@@ -2,9 +2,10 @@
 
 import { useEffect, useRef, useState } from "react";
 import { getTranslations, getTranslation } from "../services/bible-service";
-import { useNavigationContext } from "../contexts/AppContext";
+import { useReaderContext, useNavigationContext } from "../contexts/AppContext";
 
 export default function ContentSelector() {
+  const { hydrated } = useReaderContext();
   const { ui, setUiState } = useNavigationContext();
   const reader = ui.reader ?? {};
   const translationId = reader.translationId ?? null;
@@ -81,8 +82,10 @@ export default function ContentSelector() {
 
   const measureEm = (text) => {
     if (!text) return 0;
+    if (typeof document === "undefined") return 0;
     const canvas = document.createElement("canvas");
     const ctx = canvas.getContext("2d");
+    if (!ctx) return 0;
     ctx.font = "16px Arial, Helvetica, sans-serif";
     return ctx.measureText(text).width / 16;
   };
@@ -100,6 +103,8 @@ export default function ContentSelector() {
   const showTranslationAbbrev =
     abbreviate && !!selectedTranslation?.abbreviationLocal;
   const showBookAbbrev = abbreviate && !!selectedBook?.abbreviation;
+
+  if (!hydrated) return null;
 
   return (
     <div ref={containerRef} className="content-selector">
