@@ -66,3 +66,35 @@ export async function getTranslation(translationId) {
     books: translation.books.map((b) => ({ ...b })),
   };
 }
+
+const SEED_VERSES = {
+  "de4e12af7f28f599-01": {
+    GEN: {
+      1: [
+        { verse: 1, text: "In the beginning God created the heaven and the earth." },
+        { verse: 2, text: "And the earth was without form, and void; and darkness was upon the face of the deep. And the Spirit of God moved upon the face of the waters." },
+        { verse: 3, text: "And God said, Let there be light: and there was light." },
+        { verse: 4, text: "And God saw the light, that it was good: and God divided the light from the darkness." },
+        { verse: 5, text: "And God called the light Day, and the darkness he called Night. And the evening and the morning were the first day." },
+      ],
+    },
+    MAT: {
+      1: [
+        { verse: 1, text: "The book of the generation of Jesus Christ, the son of David, the son of Abraham:" },
+        { verse: 2, text: "Abraham begat Isaac; and Isaac begat Jacob; and Jacob begat Judas and his brethren;" },
+        { verse: 3, text: "And Judas begat Phares and Zara of Thamar; and Phares begat Esrom; and Esrom begat Aram;" },
+      ],
+    },
+  },
+};
+
+export async function getChapter(translationId, bookId, chapter) {
+  await delay(200);
+  const verses = SEED_VERSES[translationId]?.[bookId]?.[chapter];
+  if (!verses) {
+    return [
+      { verse: 1, text: "[Content not available in seed data. Select a different translation, book, or chapter.]" },
+    ];
+  }
+  return verses;
+}
