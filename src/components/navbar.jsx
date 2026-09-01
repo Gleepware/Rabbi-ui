@@ -2,6 +2,7 @@
 
 import { useRef, useEffect } from "react";
 import { useNavigationContext, useReaderContext } from "../contexts/AppContext";
+import ContentSelector from "./content-selector";
 
 export default function Navbar({ options, onSelect }) {
   const { menuOpen, setMenu } = useNavigationContext();
@@ -55,8 +56,9 @@ export default function Navbar({ options, onSelect }) {
           <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2">
             <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
           </svg>
-        ))}
+        )        )}
       </button>
+      <ContentSelector />
       {menuOpen && (
         <ul className="navbar-menu">
           {options.map((item, idx) => (

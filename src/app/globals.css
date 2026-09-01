@@ -270,3 +270,64 @@ body {
   background: var(--foreground);
   color: var(--background);
 }
+
+.content-selector {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  margin-left: auto;
+  flex-shrink: 1;
+  min-width: 0;
+  flex: 1;
+  padding-right: 4px;
+}
+
+.content-selector-select {
+  min-width: 0;
+  max-width: 40%;
+  padding: 1px 2px;
+  font-size: 13px;
+  border: 1px solid var(--foreground);
+  background: var(--background);
+  color: var(--foreground);
+}
+
+.content-selector-select:disabled {
+  opacity: 0.5;
+}
+
+.chapter-pill {
+  display: inline-flex;
+  align-items: center;
+  border: 1px solid var(--foreground);
+  border-radius: 999px;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.chapter-pill-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.5rem;
+  height: 1.5rem;
+  border: none;
+  background: none;
+  color: var(--foreground);
+  cursor: pointer;
+}
+
+.chapter-pill-btn:active {
+  background: var(--foreground);
+  color: var(--background);
+}
+
+.chapter-pill-btn:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+
+.chapter-pill-label {
+  padding: 0 6px;
+  font-size: 13px;
+}
