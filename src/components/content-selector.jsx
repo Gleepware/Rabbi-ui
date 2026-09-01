@@ -62,7 +62,7 @@ export default function ContentSelector() {
     const observer = new ResizeObserver(update);
     observer.observe(el);
     return () => observer.disconnect();
-  }, []);
+  }, [hydrated]);
 
   const handleTranslation = (e) => {
     const id = e.target.value;
