@@ -1,27 +1,13 @@
-import { useEffect, useState } from "react";
 import { useNavigationContext } from "../contexts/AppContext";
-import { getChapter } from "../services/bible-service";
+import { useBibleService } from "../hooks/use-bible-service";
 
 export default function ReaderPage() {
   const { ui } = useNavigationContext();
   const reader = ui.reader ?? {};
   const { translationId, bookId, chapter } = reader;
 
-  const [verses, setVerses] = useState([]);
-  const [loading, setLoading] = useState(false);
-
-  useEffect(() => {
-    if (!translationId || !bookId) {
-      setVerses([]);
-      return;
-    }
-
-    setLoading(true);
-    getChapter(translationId, bookId, chapter ?? 1).then((data) => {
-      setVerses(data);
-      setLoading(false);
-    });
-  }, [translationId, bookId, chapter]);
+  const { verses, loadingVerses, error, staleDataAvailable, clearStaleNotice } =
+    useBibleService({ translationId, bookId, chapter });
 
   if (!translationId || !bookId) {
     return (
@@ -31,7 +17,15 @@ export default function ReaderPage() {
     );
   }
 
-  if (loading) {
+  if (error?.type === "verses") {
+    return (
+      <div className="p-4 text-center opacity-70">
+        Could not load this chapter. Please try again.
+      </div>
+    );
+  }
+
+  if (loadingVerses && verses.length === 0) {
     return (
       <div className="p-4 text-center opacity-50">
         Loading...
@@ -40,13 +34,37 @@ export default function ReaderPage() {
   }
 
   return (
-    <div className="p-4">
-      {verses.map((v) => (
-        <p key={v.verse} className="mb-3 leading-relaxed">
-          <sup className="font-bold mr-1">{v.verse}</sup>
-          {v.text}
-        </p>
-      ))}
+    <div className="relative">
+      {staleDataAvailable && (
+        <div className="sticky top-0 z-10 flex items-center justify-between gap-2 bg-yellow-100 px-4 py-2 text-sm text-yellow-900 border-b border-yellow-300">
+          <span>New content loaded</span>
+          <div className="flex items-center gap-2">
+            <button
+              type="button"
+              onClick={clearStaleNotice}
+              className="rounded bg-yellow-500 px-2 py-1 text-white"
+            >
+              OK
+            </button>
+            <button
+              type="button"
+              onClick={clearStaleNotice}
+              aria-label="Close"
+              className="text-yellow-900"
+            >
+              &times;
+            </button>
+          </div>
+        </div>
+      )}
+      <div className="p-4">
+        {verses.map((v) => (
+          <p key={v.verse} className="mb-3 leading-relaxed">
+            <sup className="font-bold mr-1">{v.verse}</sup>
+            {v.text}
+          </p>
+        ))}
+      </div>
     </div>
   );
 }
