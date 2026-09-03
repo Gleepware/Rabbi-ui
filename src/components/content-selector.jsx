@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { getTranslations, getTranslation } from "../services/bible-service";
+import { useBibleService } from "../hooks/use-bible-service";
 import { useReaderContext, useNavigationContext } from "../contexts/AppContext";
 
 export default function ContentSelector() {
@@ -12,44 +12,44 @@ export default function ContentSelector() {
   const bookId = reader.bookId ?? null;
   const chapter = reader.chapter ?? 1;
 
-  const [translations, setTranslations] = useState([]);
-  const [books, setBooks] = useState([]);
   const [spaceEm, setSpaceEm] = useState(0);
 
   const containerRef = useRef(null);
   const readerRef = useRef(reader);
   readerRef.current = reader;
 
+  const setReader = (patch) =>
+    setUiState("reader", { ...reader, ...patch });
+
+  const { translations, translationBooks, setTranslation, setBook, setChapter } =
+    useBibleService({
+      translationId,
+      bookId,
+      chapter,
+      onChange: ({ translationId: t, bookId: b, chapter: c }) =>
+        setUiState("reader", { translationId: t, bookId: b, chapter: c }),
+      onTranslationLoaded: (list) => {
+        if (!readerRef.current.translationId && list.length > 0) {
+          setReader({ translationId: list[0].id, bookId: null, chapter: 1 });
+        }
+      },
+      onBooksLoaded: (books) => {
+        const currentBookId = readerRef.current.bookId;
+        if (
+          books.length > 0 &&
+          !books.some((b) => b.id === currentBookId)
+        ) {
+          setReader({ bookId: books[0].id, chapter: 1 });
+        }
+      },
+    });
+
+  const books = translationBooks;
+
   const selectedTranslation =
     translations.find((t) => t.id === translationId) ?? null;
   const selectedBook = books.find((b) => b.id === bookId) ?? null;
   const chapterCount = selectedBook?.chapterCount ?? 1;
-
-  const setReader = (patch) =>
-    setUiState("reader", { ...reader, ...patch });
-
-  useEffect(() => {
-    getTranslations().then((list) => {
-      setTranslations(list);
-      if (!readerRef.current.translationId && list.length > 0) {
-        setReader({ translationId: list[0].id, bookId: null, chapter: 1 });
-      }
-    });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  useEffect(() => {
-    if (!translationId) return;
-    getTranslation(translationId).then((translation) => {
-      if (!translation) return;
-      setBooks(translation.books);
-      const currentBookId = readerRef.current.bookId;
-      if (translation.books.length > 0 && !translation.books.some((b) => b.id === currentBookId)) {
-        setReader({ bookId: translation.books[0].id, chapter: 1 });
-      }
-    });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [translationId]);
 
   useEffect(() => {
     const el = containerRef.current;
@@ -68,19 +68,17 @@ export default function ContentSelector() {
   }, [hydrated]);
 
   const handleTranslation = (e) => {
-    const id = e.target.value;
-    setBooks([]);
-    setReader({ translationId: id, bookId: null, chapter: 1 });
+    setTranslation(e.target.value);
   };
 
   const handleBook = (e) => {
-    setReader({ bookId: e.target.value, chapter: 1 });
+    setBook(e.target.value);
   };
 
   const changeChapter = (delta) => {
     const next = chapter + delta;
     if (next < 1 || next > chapterCount) return;
-    setReader({ chapter: next });
+    setChapter(next);
   };
 
   const measureEm = (text) => {
@@ -158,7 +156,7 @@ export default function ContentSelector() {
         <select
           className="content-selector-select"
           value={chapter}
-          onChange={(e) => setReader({ chapter: Number(e.target.value) })}
+          onChange={(e) => setChapter(Number(e.target.value))}
           aria-label="Chapter"
           disabled={!bookId}
         >

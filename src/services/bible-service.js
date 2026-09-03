@@ -1,5 +1,19 @@
-function delay(ms = 300) {
-  return new Promise((resolve) => setTimeout(resolve, ms));
+function delay(ms = 300, signal) {
+  return new Promise((resolve, reject) => {
+    if (signal?.aborted) {
+      reject(signal.reason ?? new DOMException("Aborted", "AbortError"));
+      return;
+    }
+    const id = setTimeout(resolve, ms);
+    signal?.addEventListener(
+      "abort",
+      () => {
+        clearTimeout(id);
+        reject(signal.reason ?? new DOMException("Aborted", "AbortError"));
+      },
+      { once: true }
+    );
+  });
 }
 
 const SEED_TRANSLATIONS = [
@@ -47,13 +61,15 @@ const SEED_TRANSLATIONS = [
   },
 ];
 
-export async function getTranslations() {
-  await delay();
+export async function getTranslations({ signal } = {}) {
+  await delay(300, signal);
+  if (signal?.aborted) throw signal.reason ?? new DOMException("Aborted", "AbortError");
   return SEED_TRANSLATIONS.map(({ books, ...t }) => t);
 }
 
-export async function getTranslation(translationId) {
-  await delay();
+export async function getTranslation(translationId, { signal } = {}) {
+  await delay(300, signal);
+  if (signal?.aborted) throw signal.reason ?? new DOMException("Aborted", "AbortError");
   const translation = SEED_TRANSLATIONS.find((t) => t.id === translationId);
   if (!translation) return null;
   return {
@@ -88,8 +104,9 @@ const SEED_VERSES = {
   },
 };
 
-export async function getChapter(translationId, bookId, chapter) {
-  await delay(200);
+export async function getChapter(translationId, bookId, chapter, { signal } = {}) {
+  await delay(200, signal);
+  if (signal?.aborted) throw signal.reason ?? new DOMException("Aborted", "AbortError");
   const verses = SEED_VERSES[translationId]?.[bookId]?.[chapter];
   if (!verses) {
     return [
