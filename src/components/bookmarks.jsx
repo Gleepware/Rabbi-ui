@@ -1,18 +1,16 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import {
-  getBookmarks,
-  createBookmark as createBookmarkApi,
-  updateBookmark as updateBookmarkApi,
-  deleteBookmark as deleteBookmarkApi,
-} from "../services/bookmark-service";
+import * as bookmarkApi from "../services/bookmark-service";
 import {
   useBookmarksContext,
   useNavigationContext,
   useReaderContext,
 } from "../contexts/AppContext";
+import useClickOutside from "../hooks/use-click-outside";
 import BookmarkEditor from "./bookmark-editor";
+import BookmarkRow from "./bookmark-row";
+import { BookmarkIcon } from "./icons";
 
 export default function Bookmarks() {
   const {
@@ -31,22 +29,11 @@ export default function Bookmarks() {
   const rootRef = useRef(null);
   const reader = ui.reader ?? {};
 
+  useClickOutside(rootRef, open, () => setOpen(false));
+
   useEffect(() => {
-    getBookmarks().then((data) => setBookmarks(data));
+    bookmarkApi.getBookmarks().then((data) => setBookmarks(data));
   }, [setBookmarks]);
-
-  useEffect(() => {
-    if (!open) return;
-
-    const handleClickOutside = (e) => {
-      if (rootRef.current && !rootRef.current.contains(e.target)) {
-        setOpen(false);
-      }
-    };
-
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, [open]);
 
   const handleCreate = () => {
     setError(null);
@@ -72,10 +59,10 @@ export default function Bookmarks() {
   const handleSave = async (values) => {
     try {
       if (editor.mode === "edit") {
-        const updated = await updateBookmarkApi(editor.bookmark.id, values);
+        const updated = await bookmarkApi.updateBookmark(editor.bookmark.id, values);
         if (updated) updateBookmark(updated);
       } else {
-        const created = await createBookmarkApi(values);
+        const created = await bookmarkApi.createBookmark(values);
         addBookmark(created);
       }
       closeEditor();
@@ -87,7 +74,7 @@ export default function Bookmarks() {
   const handleConfirmDelete = async () => {
     if (!deletingId) return;
     try {
-      await deleteBookmarkApi(deletingId);
+      await bookmarkApi.deleteBookmark(deletingId);
       removeBookmark(deletingId);
       setDeletingId(null);
     } catch {
@@ -113,9 +100,7 @@ export default function Bookmarks() {
         aria-expanded={open}
         onClick={() => setOpen((v) => !v)}
       >
-        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2">
-          <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z" />
-        </svg>
+        <BookmarkIcon />
       </button>
       {open && (
         <div className="bookmarks-panel">
@@ -129,50 +114,16 @@ export default function Bookmarks() {
               <p className="bookmarks-empty">No bookmarks</p>
             )}
             {bookmarks.map((b) => (
-              <div key={b.id} className="bookmarks-list-item">
-                {deletingId === b.id ? (
-                  <>
-                    <span className="bookmarks-list-title">Delete &quot;{b.title}&quot;?</span>
-                    <button className="standard-btn" onClick={handleConfirmDelete}>Yes</button>
-                    <button className="standard-btn" onClick={() => setDeletingId(null)}>No</button>
-                  </>
-                ) : (
-                  <>
-                    <button
-                      type="button"
-                      className="bookmarks-list-title bookmarks-nav-btn"
-                      onClick={() => handleOpenBookmark(b)}
-                    >
-                      {b.title}
-                    </button>
-                    <button
-                      type="button"
-                      className="bookmarks-icon-btn"
-                      aria-label={`Edit ${b.title}`}
-                      onClick={() => handleEdit(b)}
-                    >
-                      <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2">
-                        <path d="M12 20h9" />
-                        <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z" />
-                      </svg>
-                    </button>
-                    <button
-                      type="button"
-                      className="bookmarks-icon-btn"
-                      aria-label={`Delete ${b.title}`}
-                      onClick={() => setDeletingId(b.id)}
-                    >
-                      <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2">
-                        <path d="M3 6h18" />
-                        <path d="M8 6V4a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1v2" />
-                        <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6" />
-                        <line x1="10" y1="11" x2="10" y2="17" />
-                        <line x1="14" y1="11" x2="14" y2="17" />
-                      </svg>
-                    </button>
-                  </>
-                )}
-              </div>
+              <BookmarkRow
+                key={b.id}
+                bookmark={b}
+                isDeleting={deletingId === b.id}
+                onOpen={handleOpenBookmark}
+                onEdit={handleEdit}
+                onDelete={(bookmark) => setDeletingId(bookmark.id)}
+                onCancelDelete={() => setDeletingId(null)}
+                onConfirmDelete={handleConfirmDelete}
+              />
             ))}
           </div>
           {error && <p className="bookmarks-error">{error}</p>}

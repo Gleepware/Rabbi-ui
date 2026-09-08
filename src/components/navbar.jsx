@@ -1,7 +1,8 @@
 "use client";
 
-import { useRef, useEffect } from "react";
+import { useRef } from "react";
 import { useNavigationContext, useReaderContext } from "../contexts/AppContext";
+import useClickOutside from "../hooks/use-click-outside";
 import ContentSelector from "./content-selector";
 import Bookmarks from "./bookmarks";
 
@@ -10,18 +11,7 @@ export default function Navbar({ options, onSelect }) {
   const { activity, setActivity, hydrated } = useReaderContext();
   const navRef = useRef(null);
 
-  useEffect(() => {
-    if (!menuOpen) return;
-
-    const handleClickOutside = (e) => {
-      if (navRef.current && !navRef.current.contains(e.target)) {
-        setMenu(false);
-      }
-    };
-
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, [menuOpen, setMenu]);
+  useClickOutside(navRef, menuOpen, () => setMenu(false));
 
   const handleMenuItem = (item) => {
     onSelect?.(item)
