@@ -8,7 +8,10 @@ export default function BookmarkEditor({ mode, bookmark, initial, onSave, onClos
   const currentBookId = bookmark?.bookId ?? initial?.bookId ?? null;
   const currentChapter = bookmark?.chapter ?? initial?.chapter ?? 1;
 
-  const [includeTranslation, setIncludeTranslation] = useState(!!currentTranslationId);
+  const initialIncludeTranslation =
+    bookmark?.includeTranslation ?? (bookmark ? !!bookmark.translationId : true);
+
+  const [includeTranslation, setIncludeTranslation] = useState(initialIncludeTranslation);
 
   const { translations, translationBooks } = useBibleService({
     translationId: currentTranslationId,
@@ -23,9 +26,10 @@ export default function BookmarkEditor({ mode, bookmark, initial, onSave, onClos
   const handleSave = () => {
     onSave({
       title: label,
-      translationId: includeTranslation ? currentTranslationId : null,
+      translationId: currentTranslationId,
       bookId: currentBookId,
       chapter: currentChapter,
+      includeTranslation,
     });
   };
 

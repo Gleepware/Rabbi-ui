@@ -37,7 +37,7 @@ export async function getBookmarks() {
   return [...loadStore()];
 }
 
-export async function createBookmark({ title, translationId, bookId, chapter } = {}) {
+export async function createBookmark({ title, translationId, bookId, chapter, includeTranslation } = {}) {
   await delay();
   const nextId = loadNextId();
   const store = loadStore();
@@ -47,6 +47,7 @@ export async function createBookmark({ title, translationId, bookId, chapter } =
     translationId: translationId ?? null,
     bookId: bookId ?? null,
     chapter: chapter ?? 1,
+    includeTranslation: includeTranslation ?? true,
   };
   store.push(bookmark);
   saveStore(store);
@@ -54,7 +55,7 @@ export async function createBookmark({ title, translationId, bookId, chapter } =
   return bookmark;
 }
 
-export async function updateBookmark(bookmarkId, { title, translationId, bookId, chapter }) {
+export async function updateBookmark(bookmarkId, { title, translationId, bookId, chapter, includeTranslation }) {
   await delay();
   const store = loadStore();
   const bookmark = store.find((b) => b.id === bookmarkId);
@@ -63,6 +64,7 @@ export async function updateBookmark(bookmarkId, { title, translationId, bookId,
   if (translationId !== undefined) bookmark.translationId = translationId;
   if (bookId !== undefined) bookmark.bookId = bookId;
   if (chapter !== undefined) bookmark.chapter = chapter;
+  if (includeTranslation !== undefined) bookmark.includeTranslation = includeTranslation;
   saveStore(store);
   return { ...bookmark };
 }
