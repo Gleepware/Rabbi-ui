@@ -3,6 +3,7 @@
 import { useRef, useEffect } from "react";
 import { useNavigationContext, useReaderContext } from "../contexts/AppContext";
 import ContentSelector from "./content-selector";
+import Bookmarks from "./bookmarks";
 
 export default function Navbar({ options, onSelect }) {
   const { menuOpen, setMenu } = useNavigationContext();
@@ -58,6 +59,7 @@ export default function Navbar({ options, onSelect }) {
           </svg>
         )        )}
       </button>
+      <Bookmarks />
       <ContentSelector />
       {menuOpen && (
         <ul className="navbar-menu">
