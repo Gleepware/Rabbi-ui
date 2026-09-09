@@ -23,7 +23,7 @@ export default function BookmarkEditor({ mode, bookmark, initial, onSave, onClos
     translationBooks.find((b) => b.id === currentBookId)?.name ?? currentBookId ?? "";
   const label = `${includeTranslation && translationLabel ? `${translationLabel}-` : ""}${bookName}:${currentChapter}`;
 
-  const handleSave = () => {
+  const onBookmarkSave = () => {
     onSave({
       title: label,
       translationId: currentTranslationId,
@@ -54,7 +54,7 @@ export default function BookmarkEditor({ mode, bookmark, initial, onSave, onClos
           </label>
         </div>
         <div className="bookmarks-editor-footer">
-          <button className="standard-btn" onClick={handleSave}>Save</button>
+          <button className="standard-btn" onClick={onBookmarkSave}>Save</button>
         </div>
       </div>
     </div>

@@ -13,7 +13,7 @@ export default function Navbar({ options, onSelect }) {
 
   useClickOutside(navRef, menuOpen, () => setMenu(false));
 
-  const handleMenuItem = (item) => {
+  const onMenuItemClick = (item) => {
     onSelect?.(item)
     setMenu(false)
   }
@@ -55,7 +55,7 @@ export default function Navbar({ options, onSelect }) {
         <ul className="navbar-menu">
           {options.map((item, idx) => (
             <li key={idx}>
-              <button className="navbar-menu-item" onClick={() => handleMenuItem(item.key)}>{item.label}</button>
+              <button className="navbar-menu-item" onClick={() => onMenuItemClick(item.key)}>{item.label}</button>
             </li>
           ))}
         </ul>

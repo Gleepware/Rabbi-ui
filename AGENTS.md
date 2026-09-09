@@ -14,6 +14,7 @@ This block is written and re-added by `next dev` — verify at `node_modules/nex
 - Pure JavaScript only — no TypeScript (.ts, .tsx). Use .js and .jsx extensions.
 - Use ES6 module syntax (import/export). Do NOT use require().
 - React components must use the .jsx extension.
+- Event handler functions use the `on{Noun}{Verb}` convention (e.g. `onMenuItemClick`, `onBookmarkSave`) — not `handle{...}` names.
 - This is a front-end only application — no server-side code, no API routes, no Node.js APIs.
 - React components go in the `src/components` folder.
 - This application is built for mobile phone screens. All UI should be mobile-first.

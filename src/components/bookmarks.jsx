@@ -35,7 +35,7 @@ export default function Bookmarks() {
     bookmarkApi.getBookmarks().then((data) => setBookmarks(data));
   }, [setBookmarks]);
 
-  const handleCreate = () => {
+  const onBookmarkCreate = () => {
     setError(null);
     setDeletingId(null);
     setEditor({
@@ -48,7 +48,7 @@ export default function Bookmarks() {
     });
   };
 
-  const handleEdit = (bookmark) => {
+  const onBookmarkEdit = (bookmark) => {
     setError(null);
     setDeletingId(null);
     setEditor({ mode: "edit", bookmark });
@@ -56,7 +56,7 @@ export default function Bookmarks() {
 
   const closeEditor = () => setEditor(null);
 
-  const handleSave = async (values) => {
+  const onBookmarkSave = async (values) => {
     try {
       if (editor.mode === "edit") {
         const updated = await bookmarkApi.updateBookmark(editor.bookmark.id, values);
@@ -71,7 +71,7 @@ export default function Bookmarks() {
     }
   };
 
-  const handleConfirmDelete = async () => {
+  const onBookmarkDelete = async () => {
     if (!deletingId) return;
     try {
       await bookmarkApi.deleteBookmark(deletingId);
@@ -82,7 +82,7 @@ export default function Bookmarks() {
     }
   };
 
-  const handleOpenBookmark = (bookmark) => {
+  const onBookmarkOpen = (bookmark) => {
     setUiState("reader", {
       ...(bookmark.translationId ? { translationId: bookmark.translationId } : {}),
       bookId: bookmark.bookId,
@@ -106,7 +106,7 @@ export default function Bookmarks() {
         <div className="bookmarks-panel">
           <div className="bookmarks-panel-header">
             <h2 className="bookmarks-panel-title">Bookmarks</h2>
-            <button className="standard-btn" onClick={handleCreate}>Create</button>
+            <button className="standard-btn" onClick={onBookmarkCreate}>Create</button>
             <button className="standard-btn" onClick={() => setOpen(false)}>Close</button>
           </div>
           <div className="bookmarks-list">
@@ -118,11 +118,11 @@ export default function Bookmarks() {
                 key={b.id}
                 bookmark={b}
                 isDeleting={deletingId === b.id}
-                onOpen={handleOpenBookmark}
-                onEdit={handleEdit}
+                onOpen={onBookmarkOpen}
+                onEdit={onBookmarkEdit}
                 onDelete={(bookmark) => setDeletingId(bookmark.id)}
                 onCancelDelete={() => setDeletingId(null)}
-                onConfirmDelete={handleConfirmDelete}
+                onConfirmDelete={onBookmarkDelete}
               />
             ))}
           </div>
@@ -134,7 +134,7 @@ export default function Bookmarks() {
           mode={editor.mode}
           bookmark={editor.bookmark ?? null}
           initial={editor.initial ?? null}
-          onSave={handleSave}
+          onSave={onBookmarkSave}
           onClose={closeEditor}
         />
       )}

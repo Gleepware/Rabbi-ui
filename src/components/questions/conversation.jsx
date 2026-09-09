@@ -20,7 +20,7 @@ export default function Conversation({ conversation, onConversationCreated, onCo
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
-  async function handleSend() {
+  async function onMessageSend() {
     const text = input.trim();
     if (!text) return;
     setMessages((prev) => [...prev, { role: "user", text }]);
@@ -44,10 +44,10 @@ export default function Conversation({ conversation, onConversationCreated, onCo
     }
   }
 
-  function handleKeyDown(e) {
+  function onEnterPress(e) {
     if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault();
-      handleSend();
+      onMessageSend();
     }
   }
 
@@ -69,11 +69,11 @@ export default function Conversation({ conversation, onConversationCreated, onCo
           className="conversation-textarea"
           value={input}
           onChange={(e) => setInput(e.target.value)}
-          onKeyDown={handleKeyDown}
+          onKeyDown={onEnterPress}
           rows={1}
           placeholder="Type a message..."
         />
-        <button className="conversation-send" onClick={handleSend}>
+        <button className="conversation-send" onClick={onMessageSend}>
           Send
         </button>
       </div>

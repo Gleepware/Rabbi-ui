@@ -45,7 +45,7 @@ export default function Home() {
     setActivity(newActivity)
   }
 
-  const handleCloseEvent = () => {
+  const onActiveComponentClose = () => {
     setActivity(previousActivity.current)
   }
 
@@ -54,7 +54,7 @@ export default function Home() {
     <>
       <Navbar options={menuActivities} onSelect={(item) => switchActivity(item)} />
       <ContentPanel>
-        {hydrated ? <ActiveComponent onClose={() => handleCloseEvent()} /> : null}
+        {hydrated ? <ActiveComponent onClose={() => onActiveComponentClose()} /> : null}
       </ContentPanel>
     </>
   );
