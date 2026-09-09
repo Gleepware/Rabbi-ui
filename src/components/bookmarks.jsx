@@ -86,8 +86,10 @@ export default function Bookmarks() {
   };
 
   const onBookmarkOpen = (bookmark) => {
+    const applyTranslation = (bookmark.includeTranslation ?? true) && bookmark.translationId;
+    const translationId = applyTranslation ? bookmark.translationId : reader.translationId;
     setUiState("reader", {
-      ...(bookmark.translationId ? { translationId: bookmark.translationId } : {}),
+      ...(translationId ? { translationId } : {}),
       bookId: bookmark.bookId,
       chapter: bookmark.chapter,
     });

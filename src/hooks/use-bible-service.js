@@ -69,41 +69,44 @@ function useAsyncResource({
   errorType,
   onLoaded,
   onSkip,
+  onCleanup,
   deps,
 }) {
   useEffect(() => {
+    let cancelled = false;
+    let controller = null;
     if (!enabled) {
       setData([]);
       onSkip?.();
-      return;
+    } else {
+      const cached = cacheRead();
+      if (cached !== undefined) {
+        setData(cached);
+        onLoaded?.(cached);
+      } else {
+        controller = new AbortController();
+        setLoading(true);
+        setError((e) => (e?.type === errorType ? null : e));
+        load(controller.signal)
+          .then((data) => {
+            if (cancelled) return;
+            cacheWrite(data);
+            setData(data);
+            onLoaded?.(data);
+          })
+          .catch((err) => {
+            if (cancelled || isAbortError(err)) return;
+            setError({ type: errorType, message: String(err?.message ?? err) });
+          })
+          .finally(() => {
+            if (!cancelled) setLoading(false);
+          });
+      }
     }
-    const cached = cacheRead();
-    if (cached !== undefined) {
-      setData(cached);
-      onLoaded?.(cached);
-      return;
-    }
-    const controller = new AbortController();
-    let cancelled = false;
-    setLoading(true);
-    setError((e) => (e?.type === errorType ? null : e));
-    load(controller.signal)
-      .then((data) => {
-        if (cancelled) return;
-        cacheWrite(data);
-        setData(data);
-        onLoaded?.(data);
-      })
-      .catch((err) => {
-        if (cancelled || isAbortError(err)) return;
-        setError({ type: errorType, message: String(err?.message ?? err) });
-      })
-      .finally(() => {
-        if (!cancelled) setLoading(false);
-      });
     return () => {
       cancelled = true;
-      controller.abort();
+      controller?.abort();
+      onCleanup?.();
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, deps);
@@ -202,6 +205,9 @@ export function useBibleService({
       onVersesLoadedRef.current?.(data);
     },
     onSkip: () => {
+      verseKeyRef.current = null;
+    },
+    onCleanup: () => {
       verseKeyRef.current = null;
     },
     deps: [translationId, bookId, chapter],

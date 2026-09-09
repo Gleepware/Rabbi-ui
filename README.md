@@ -5,10 +5,11 @@
 * Keep state across loads
 
 * add conversation management
-* add bible selection UI
-  * make it responsive
-* Add bookmarks
 * add about
+  * Overview (version, release, description)
+  * EULA ?Legalese?
+  * Copyrights
+  * Sources
 * add onboarding
   * Discription
   * EULA

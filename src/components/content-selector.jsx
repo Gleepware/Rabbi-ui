@@ -36,15 +36,6 @@ export default function ContentSelector() {
           setReader({ translationId: list[0].id, bookId: null, chapter: 1 });
         }
       },
-      onBooksLoaded: (books) => {
-        const currentBookId = readerRef.current.bookId;
-        if (
-          books.length > 0 &&
-          !books.some((b) => b.id === currentBookId)
-        ) {
-          setReader({ bookId: books[0].id, chapter: 1 });
-        }
-      },
     });
 
   const books = translationBooks;
