@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import Conversation from "./conversation";
 import { getConversations, createConversation } from "../../services/conversation-service";
 import { useConversationsContext } from "../../contexts/AppContext";
@@ -17,6 +17,8 @@ export default function Conversations({ onClose }) {
 
   const selectedConversation = conversations.find((c) => c.id === selectedId) ?? null;
 
+  const restoredSelectedIdRef = useRef(selectedId);
+
   const onConversationCreate = async () => {
     const newConversation = await createConversation({ title: "" });
     addConversation(newConversation);
@@ -27,7 +29,9 @@ export default function Conversations({ onClose }) {
     getConversations()
       .then((data) => {
         setConversations(data);
-        if (data.length > 0) selectConversation(data[0].id);
+        if (data.length > 0 && !data.some((c) => c.id === restoredSelectedIdRef.current)) {
+          selectConversation(data[0].id);
+        }
       })
       .catch(() => {});
   }, [setConversations, selectConversation]);
