@@ -67,11 +67,11 @@ export default function ContentSelector() {
     return () => observer.disconnect();
   }, [hydrated]);
 
-  const handleTranslation = (e) => {
+  const onTranslationChange = (e) => {
     setTranslation(e.target.value);
   };
 
-  const handleBook = (e) => {
+  const onBookChange = (e) => {
     setBook(e.target.value);
   };
 
@@ -112,7 +112,7 @@ export default function ContentSelector() {
       <select
         className="content-selector-select"
         value={translationId ?? ""}
-        onChange={handleTranslation}
+        onChange={onTranslationChange}
         aria-label="Translation"
       >
         <option value="" disabled>
@@ -129,7 +129,7 @@ export default function ContentSelector() {
       <select
         className="content-selector-select"
         value={bookId ?? ""}
-        onChange={handleBook}
+        onChange={onBookChange}
         aria-label="Book"
         disabled={!translationId}
       >

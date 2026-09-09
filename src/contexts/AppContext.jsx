@@ -8,6 +8,7 @@ const initialState = {
   activity: "Reader",
   conversations: [],
   selectedConversationId: null,
+  bookmarks: [],
   menuOpen: false,
   scrollPositions: {},
   ui: {},
@@ -61,6 +62,23 @@ function appReducer(state, action) {
       };
     case "SELECT_CONVERSATION":
       return { ...state, selectedConversationId: action.payload };
+
+    case "SET_BOOKMARKS":
+      return { ...state, bookmarks: action.payload };
+    case "ADD_BOOKMARK":
+      return { ...state, bookmarks: [...state.bookmarks, action.payload] };
+    case "UPDATE_BOOKMARK":
+      return {
+        ...state,
+        bookmarks: state.bookmarks.map((b) =>
+          b.id === action.payload.id ? action.payload : b
+        ),
+      };
+    case "REMOVE_BOOKMARK":
+      return {
+        ...state,
+        bookmarks: state.bookmarks.filter((b) => b.id !== action.payload),
+      };
 
     case "TOGGLE_MENU":
       return { ...state, menuOpen: !state.menuOpen };
@@ -127,6 +145,17 @@ export function useConversationsContext() {
     updateConversation: useCallback((v) => dispatch({ type: "UPDATE_CONVERSATION", payload: v }), [dispatch]),
     removeConversation: useCallback((v) => dispatch({ type: "REMOVE_CONVERSATION", payload: v }), [dispatch]),
     selectConversation: useCallback((v) => dispatch({ type: "SELECT_CONVERSATION", payload: v }), [dispatch]),
+  };
+}
+
+export function useBookmarksContext() {
+  const { state, dispatch } = useContext(AppContext);
+  return {
+    bookmarks: state.bookmarks,
+    setBookmarks: useCallback((v) => dispatch({ type: "SET_BOOKMARKS", payload: v }), [dispatch]),
+    addBookmark: useCallback((v) => dispatch({ type: "ADD_BOOKMARK", payload: v }), [dispatch]),
+    updateBookmark: useCallback((v) => dispatch({ type: "UPDATE_BOOKMARK", payload: v }), [dispatch]),
+    removeBookmark: useCallback((v) => dispatch({ type: "REMOVE_BOOKMARK", payload: v }), [dispatch]),
   };
 }
 

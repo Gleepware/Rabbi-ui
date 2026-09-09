@@ -16,7 +16,7 @@ export default function Conversations({ onClose }) {
 
   const selectedConversation = conversations.find((c) => c.id === selectedId) ?? null;
 
-  const handleNew = async () => {
+  const onConversationCreate = async () => {
     const newConversation = await createConversation({ title: "" });
     addConversation(newConversation);
     selectConversation(newConversation.id);
@@ -43,7 +43,7 @@ export default function Conversations({ onClose }) {
             </option>
           ))}
         </select>
-        <button className="standard-btn" onClick={handleNew}>New</button>
+        <button className="standard-btn" onClick={onConversationCreate}>New</button>
         <button className="standard-btn" onClick={onClose}>Close</button>
       </div>
       <Conversation conversation={selectedConversation} onConversationCreated={(newConversation) => {

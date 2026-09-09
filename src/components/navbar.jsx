@@ -1,28 +1,19 @@
 "use client";
 
-import { useRef, useEffect } from "react";
+import { useRef } from "react";
 import { useNavigationContext, useReaderContext } from "../contexts/AppContext";
+import useClickOutside from "../hooks/use-click-outside";
 import ContentSelector from "./content-selector";
+import Bookmarks from "./bookmarks";
 
 export default function Navbar({ options, onSelect }) {
   const { menuOpen, setMenu } = useNavigationContext();
   const { activity, setActivity, hydrated } = useReaderContext();
   const navRef = useRef(null);
 
-  useEffect(() => {
-    if (!menuOpen) return;
+  useClickOutside(navRef, menuOpen, () => setMenu(false));
 
-    const handleClickOutside = (e) => {
-      if (navRef.current && !navRef.current.contains(e.target)) {
-        setMenu(false);
-      }
-    };
-
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, [menuOpen, setMenu]);
-
-  const handleMenuItem = (item) => {
+  const onMenuItemClick = (item) => {
     onSelect?.(item)
     setMenu(false)
   }
@@ -58,12 +49,13 @@ export default function Navbar({ options, onSelect }) {
           </svg>
         )        )}
       </button>
+      <Bookmarks />
       <ContentSelector />
       {menuOpen && (
         <ul className="navbar-menu">
           {options.map((item, idx) => (
             <li key={idx}>
-              <button className="navbar-menu-item" onClick={() => handleMenuItem(item.key)}>{item.label}</button>
+              <button className="navbar-menu-item" onClick={() => onMenuItemClick(item.key)}>{item.label}</button>
             </li>
           ))}
         </ul>
