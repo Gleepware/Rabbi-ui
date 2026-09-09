@@ -195,12 +195,6 @@ body {
   cursor: not-allowed;
 }
 
-.questions-content {
-  flex: 1;
-  min-height: 0;
-  overflow-y: auto;
-}
-
 .conversation {
   display: flex;
   flex-direction: column;
@@ -276,6 +270,12 @@ body {
   color: var(--background);
 }
 
+.conversation-error {
+  padding: 8px;
+  color: #c0392b;
+  font-size: 14px;
+}
+
 .content-selector {
   display: flex;
   align-items: center;
@@ -334,11 +334,6 @@ body {
 .chapter-pill-btn:disabled {
   opacity: 0.4;
   cursor: default;
-}
-
-.chapter-pill-label {
-  padding: 0 6px;
-  font-size: 13px;
 }
 
 .navbar-bookmarks {
@@ -519,16 +514,6 @@ body {
   height: 1.25rem;
   margin: 0;
   accent-color: var(--foreground);
-}
-
-.bookmarks-input {
-  width: 100%;
-  min-width: 0;
-  padding: 2px 4px;
-  font-size: 16px;
-  border: 1px solid var(--foreground);
-  background: var(--background);
-  color: var(--foreground);
 }
 
 .bookmarks-editor-footer {

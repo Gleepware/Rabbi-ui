@@ -58,6 +58,57 @@ function sameVerses(a, b) {
   return true;
 }
 
+function useAsyncResource({
+  enabled,
+  cacheRead,
+  cacheWrite,
+  load,
+  setData,
+  setLoading,
+  setError,
+  errorType,
+  onLoaded,
+  onSkip,
+  deps,
+}) {
+  useEffect(() => {
+    if (!enabled) {
+      setData([]);
+      onSkip?.();
+      return;
+    }
+    const cached = cacheRead();
+    if (cached !== undefined) {
+      setData(cached);
+      onLoaded?.(cached);
+      return;
+    }
+    const controller = new AbortController();
+    let cancelled = false;
+    setLoading(true);
+    setError((e) => (e?.type === errorType ? null : e));
+    load(controller.signal)
+      .then((data) => {
+        if (cancelled) return;
+        cacheWrite(data);
+        setData(data);
+        onLoaded?.(data);
+      })
+      .catch((err) => {
+        if (cancelled || isAbortError(err)) return;
+        setError({ type: errorType, message: String(err?.message ?? err) });
+      })
+      .finally(() => {
+        if (!cancelled) setLoading(false);
+      });
+    return () => {
+      cancelled = true;
+      controller.abort();
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, deps);
+}
+
 export function useBibleService({
   translationId,
   bookId,
@@ -77,138 +128,84 @@ export function useBibleService({
   const [staleDataAvailable, setStaleDataAvailable] = useState(false);
 
   const onChangeRef = useRef(onChange);
-  onChangeRef.current = onChange;
   const onTranslationLoadedRef = useRef(onTranslationLoaded);
-  onTranslationLoadedRef.current = onTranslationLoaded;
   const onBooksLoadedRef = useRef(onBooksLoaded);
-  onBooksLoadedRef.current = onBooksLoaded;
   const onVersesLoadedRef = useRef(onVersesLoaded);
-  onVersesLoadedRef.current = onVersesLoaded;
-
   const translationIdRef = useRef(translationId);
-  translationIdRef.current = translationId;
   const bookIdRef = useRef(bookId);
-  bookIdRef.current = bookId;
   const chapterRef = useRef(chapter);
-  chapterRef.current = chapter;
   const versesRef = useRef(verses);
-  versesRef.current = verses;
   const verseKeyRef = useRef(null);
 
   useEffect(() => {
-    if (isFresh(cache.translations)) {
-      const list = cache.translations.data;
-      setTranslations(list);
-      onTranslationLoadedRef.current?.(list);
-      return;
-    }
-    const controller = new AbortController();
-    let cancelled = false;
-    setLoadingTranslations(true);
-    setError((e) => (e?.type === "translations" ? null : e));
-    getTranslations({ signal: controller.signal })
-      .then((list) => {
-        if (cancelled) return;
-        cache.translations = { data: list, timestamp: Date.now(), ttl: TRANSLATIONS_TTL };
-        setTranslations(list);
-        onTranslationLoadedRef.current?.(list);
-      })
-      .catch((err) => {
-        if (cancelled || isAbortError(err)) return;
-        setError({ type: "translations", message: String(err?.message ?? err) });
-      })
-      .finally(() => {
-        if (!cancelled) setLoadingTranslations(false);
-      });
-    return () => {
-      cancelled = true;
-      controller.abort();
-    };
-  }, []);
+    onChangeRef.current = onChange;
+    onTranslationLoadedRef.current = onTranslationLoaded;
+    onBooksLoadedRef.current = onBooksLoaded;
+    onVersesLoadedRef.current = onVersesLoaded;
+    translationIdRef.current = translationId;
+    bookIdRef.current = bookId;
+    chapterRef.current = chapter;
+    versesRef.current = verses;
+  });
 
-  useEffect(() => {
-    if (!translationId) {
-      setTranslationBooks([]);
-      setLoadingBooks(false);
-      return;
-    }
-    const cached = getCached(cache.translationBooks, translationId);
-    if (cached !== undefined) {
-      setTranslationBooks(cached);
-      onBooksLoadedRef.current?.(cached);
-      return;
-    }
-    const controller = new AbortController();
-    let cancelled = false;
-    setLoadingBooks(true);
-    setError((e) => (e?.type === "books" ? null : e));
-    dedupe(pending.translationBooks, translationId, () =>
-      getTranslation(translationId, { signal: controller.signal })
-    )
-      .then((translation) => {
-        if (cancelled) return;
-        const books = translation?.books ?? [];
-        setCached(cache.translationBooks, translationId, books, BOOKS_TTL);
-        setTranslationBooks(books);
-        onBooksLoadedRef.current?.(books);
-      })
-      .catch((err) => {
-        if (cancelled || isAbortError(err)) return;
-        setError({ type: "books", message: String(err?.message ?? err) });
-      })
-      .finally(() => {
-        if (!cancelled) setLoadingBooks(false);
-      });
-    return () => {
-      cancelled = true;
-      controller.abort();
-    };
-  }, [translationId]);
+  useAsyncResource({
+    enabled: true,
+    cacheRead: () => (isFresh(cache.translations) ? cache.translations.data : undefined),
+    cacheWrite: (list) => {
+      cache.translations = { data: list, timestamp: Date.now(), ttl: TRANSLATIONS_TTL };
+    },
+    load: (signal) => getTranslations({ signal }),
+    setData: setTranslations,
+    setLoading: setLoadingTranslations,
+    setError,
+    errorType: "translations",
+    onLoaded: (list) => onTranslationLoadedRef.current?.(list),
+    deps: [],
+  });
 
-  useEffect(() => {
-    if (!translationId || !bookId) {
-      setVerses([]);
+  useAsyncResource({
+    enabled: !!translationId,
+    cacheRead: () => getCached(cache.translationBooks, translationId),
+    cacheWrite: (books) => setCached(cache.translationBooks, translationId, books, BOOKS_TTL),
+    load: (signal) =>
+      dedupe(pending.translationBooks, translationId, () =>
+        getTranslation(translationId, { signal }).then((translation) => translation?.books ?? [])
+      ),
+    setData: setTranslationBooks,
+    setLoading: setLoadingBooks,
+    setError,
+    errorType: "books",
+    onLoaded: (books) => onBooksLoadedRef.current?.(books),
+    onSkip: () => setLoadingBooks(false),
+    deps: [translationId],
+  });
+
+  const currentChapter = chapter ?? 1;
+  const verseKey = `${translationId}:${bookId}:${currentChapter}`;
+  useAsyncResource({
+    enabled: !!translationId && !!bookId,
+    cacheRead: () => getCached(cache.chapters, verseKey),
+    cacheWrite: (data) => setCached(cache.chapters, verseKey, data, CHAPTERS_TTL),
+    load: (signal) =>
+      dedupe(pending.chapters, verseKey, () =>
+        getChapter(translationId, bookId, currentChapter, { signal })
+      ),
+    setData: setVerses,
+    setLoading: setLoadingVerses,
+    setError,
+    errorType: "verses",
+    onLoaded: (data) => {
+      if (verseKeyRef.current === verseKey && !sameVerses(versesRef.current, data)) {
+        setStaleDataAvailable(true);
+      }
+      verseKeyRef.current = verseKey;
+      onVersesLoadedRef.current?.(data);
+    },
+    onSkip: () => {
       verseKeyRef.current = null;
-      return;
-    }
-    const currentChapter = chapter ?? 1;
-    const key = `${translationId}:${bookId}:${currentChapter}`;
-    const cached = getCached(cache.chapters, key);
-    if (cached !== undefined) {
-      setVerses(cached);
-      verseKeyRef.current = key;
-      onVersesLoadedRef.current?.(cached);
-      return;
-    }
-    const controller = new AbortController();
-    let cancelled = false;
-    setLoadingVerses(true);
-    setError((e) => (e?.type === "verses" ? null : e));
-    dedupe(pending.chapters, key, () =>
-      getChapter(translationId, bookId, currentChapter, { signal: controller.signal })
-    )
-      .then((data) => {
-        if (cancelled) return;
-        setCached(cache.chapters, key, data, CHAPTERS_TTL);
-        if (verseKeyRef.current === key && !sameVerses(versesRef.current, data)) {
-          setStaleDataAvailable(true);
-        }
-        verseKeyRef.current = key;
-        setVerses(data);
-        onVersesLoadedRef.current?.(data);
-      })
-      .catch((err) => {
-        if (cancelled || isAbortError(err)) return;
-        setError({ type: "verses", message: String(err?.message ?? err) });
-      })
-      .finally(() => {
-        if (!cancelled) setLoadingVerses(false);
-      });
-    return () => {
-      cancelled = true;
-      controller.abort();
-    };
-  }, [translationId, bookId, chapter]);
+    },
+    deps: [translationId, bookId, chapter],
+  });
 
   const setTranslation = useCallback(
     (id) => {
@@ -246,7 +243,6 @@ export function useBibleService({
     []
   );
 
-  const clearError = useCallback(() => setError(null), []);
   const clearStaleNotice = useCallback(() => setStaleDataAvailable(false), []);
 
   return {
@@ -261,7 +257,6 @@ export function useBibleService({
     setTranslation,
     setBook,
     setChapter,
-    clearError,
     clearStaleNotice,
   };
 }

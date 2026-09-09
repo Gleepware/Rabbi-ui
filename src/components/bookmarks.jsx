@@ -32,7 +32,10 @@ export default function Bookmarks() {
   useClickOutside(rootRef, open, () => setOpen(false));
 
   useEffect(() => {
-    bookmarkApi.getBookmarks().then((data) => setBookmarks(data));
+    bookmarkApi
+      .getBookmarks()
+      .then((data) => setBookmarks(data))
+      .catch(() => setError("Could not load bookmarks."));
   }, [setBookmarks]);
 
   const onBookmarkCreate = () => {
@@ -134,8 +137,8 @@ export default function Bookmarks() {
           mode={editor.mode}
           bookmark={editor.bookmark ?? null}
           initial={editor.initial ?? null}
-          onSave={onBookmarkSave}
-          onClose={closeEditor}
+          onBookmarkSave={onBookmarkSave}
+          onBookmarkClose={closeEditor}
         />
       )}
     </div>

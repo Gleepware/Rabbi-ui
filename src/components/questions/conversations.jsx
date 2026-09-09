@@ -24,10 +24,12 @@ export default function Conversations({ onClose }) {
   };
 
   useEffect(() => {
-    getConversations().then((data) => {
-      setConversations(data);
-      if (data.length > 0) selectConversation(data[0].id);
-    });
+    getConversations()
+      .then((data) => {
+        setConversations(data);
+        if (data.length > 0) selectConversation(data[0].id);
+      })
+      .catch(() => {});
   }, [setConversations, selectConversation]);
 
   return (

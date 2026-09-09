@@ -1,20 +1,4 @@
-function delay(ms = 300, signal) {
-  return new Promise((resolve, reject) => {
-    if (signal?.aborted) {
-      reject(signal.reason ?? new DOMException("Aborted", "AbortError"));
-      return;
-    }
-    const id = setTimeout(resolve, ms);
-    signal?.addEventListener(
-      "abort",
-      () => {
-        clearTimeout(id);
-        reject(signal.reason ?? new DOMException("Aborted", "AbortError"));
-      },
-      { once: true }
-    );
-  });
-}
+import { delay } from "./local-store";
 
 const SEED_TRANSLATIONS = [
   {
