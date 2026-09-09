@@ -190,6 +190,11 @@ body {
   color: var(--background);
 }
 
+.standard-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
 .questions-content {
   flex: 1;
   min-height: 0;

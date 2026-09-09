@@ -11,6 +11,7 @@ export default function Conversations({ onClose }) {
     selectedId,
     setConversations,
     addConversation,
+    updateConversation,
     selectConversation,
   } = useConversationsContext();
 
@@ -43,14 +44,14 @@ export default function Conversations({ onClose }) {
             </option>
           ))}
         </select>
-        <button className="standard-btn" onClick={onConversationCreate}>New</button>
+        <button className="standard-btn" disabled={conversations.length === 0} onClick={onConversationCreate}>New</button>
         <button className="standard-btn" onClick={onClose}>Close</button>
       </div>
       <Conversation conversation={selectedConversation} onConversationCreated={(newConversation) => {
         addConversation(newConversation);
         selectConversation(newConversation.id);
       }} onConversationUpdated={(updated) => {
-        // handled via context in child
+        updateConversation(updated);
       }}></Conversation>
     </div>
   );
