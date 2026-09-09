@@ -7,6 +7,7 @@ import {
   deleteConversation as deleteConversationApi,
 } from "../../services/conversation-service";
 import { useConversationsContext } from "../../contexts/AppContext";
+import { DeleteIcon } from "../icons";
 
 export default function ConversationsSettings({ onClose }) {
   const {
@@ -20,28 +21,30 @@ export default function ConversationsSettings({ onClose }) {
   const [deletingId, setDeletingId] = useState(null);
 
   useEffect(() => {
-    getConversations().then((data) => setConversations(data));
+    getConversations()
+      .then((data) => setConversations(data))
+      .catch(() => {});
   }, [setConversations]);
 
-  function startRename(conversation) {
+  function onRenameStart(conversation) {
     setEditingId(conversation.id);
     setDraftTitle(conversation.title);
   }
 
-  function cancelRename() {
+  function onRenameCancel() {
     setEditingId(null);
     setDraftTitle("");
   }
 
-  async function saveRename() {
+  async function onRenameSave() {
     const title = draftTitle.trim();
     if (!editingId || !title) return;
     const updated = await updateConversationApi(editingId, { title });
     if (updated) updateConversation(updated);
-    cancelRename();
+    onRenameCancel();
   }
 
-  async function confirmDelete() {
+  async function onDeleteConfirm() {
     if (!deletingId) return;
     await deleteConversationApi(deletingId);
     removeConversation(deletingId);
@@ -65,45 +68,39 @@ export default function ConversationsSettings({ onClose }) {
                   value={draftTitle}
                   onChange={(e) => setDraftTitle(e.target.value)}
                   onKeyDown={(e) => {
-                    if (e.key === "Enter") saveRename();
-                    if (e.key === "Escape") cancelRename();
+                    if (e.key === "Enter") onRenameSave();
+                    if (e.key === "Escape") onRenameCancel();
                   }}
                   autoFocus
                 />
                 <button
                   className="standard-btn"
-                  onClick={saveRename}
+                  onClick={onRenameSave}
                   disabled={!draftTitle.trim()}
                 >
                   Save
                 </button>
-                <button className="standard-btn" onClick={cancelRename}>Cancel</button>
+                <button className="standard-btn" onClick={onRenameCancel}>Cancel</button>
               </>
             ) : deletingId === c.id ? (
               <>
                 <span className="settings-list-title">
                   Delete &quot;{c.title || "Untitled"}&quot;?
                 </span>
-                <button className="standard-btn" onClick={confirmDelete}>Yes</button>
+                <button className="standard-btn" onClick={onDeleteConfirm}>Yes</button>
                 <button className="standard-btn" onClick={() => setDeletingId(null)}>No</button>
               </>
             ) : (
               <>
                 <span className="settings-list-title">{c.title || "Untitled"}</span>
-                <button className="standard-btn" onClick={() => startRename(c)}>Rename</button>
+                <button className="standard-btn" onClick={() => onRenameStart(c)}>Rename</button>
                 <button
                   className="standard-btn"
                   style={{ padding: "2px" }}
                   aria-label={`Delete ${c.title || "Untitled"}`}
                   onClick={() => setDeletingId(c.id)}
                 >
-                  <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" strokeWidth="2">
-                    <path d="M3 6h18" />
-                    <path d="M8 6V4a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1v2" />
-                    <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6" />
-                    <line x1="10" y1="11" x2="10" y2="17" />
-                    <line x1="14" y1="11" x2="14" y2="17" />
-                  </svg>
+                  <DeleteIcon />
                 </button>
               </>
             )}

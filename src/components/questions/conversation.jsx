@@ -1,10 +1,13 @@
 import { useState, useRef, useEffect } from "react";
 import ContentPanel from "../content-panel";
-import { askQuestion, createConversation, updateConversation } from "../../services/conversation-service";
+import { askQuestion, createConversation, getConversation, updateConversation } from "../../services/conversation-service";
+
+const MAX_TITLE_LENGTH = 40;
 
 export default function Conversation({ conversation, onConversationCreated, onConversationUpdated }) {
   const [messages, setMessages] = useState(conversation?.messages ?? []);
   const [input, setInput] = useState("");
+  const [error, setError] = useState(null);
   const messagesEndRef = useRef(null);
   const prevConversationIdRef = useRef(null);
 
@@ -25,22 +28,32 @@ export default function Conversation({ conversation, onConversationCreated, onCo
     if (!text) return;
     setMessages((prev) => [...prev, { role: "user", text }]);
     setInput("");
+    setError(null);
 
-    let conversationId = conversation?.id;
-    if (!conversationId) {
-      const title = text.substring(0, 40);
-      const newConversation = await createConversation({ title });
-      conversationId = newConversation.id;
-      if (onConversationCreated) onConversationCreated(newConversation);
-    }
+    try {
+      let conversationId = conversation?.id;
+      const isNew = !conversationId;
+      if (isNew) {
+        const title = text.substring(0, MAX_TITLE_LENGTH);
+        const newConversation = await createConversation({ title });
+        conversationId = newConversation.id;
+      }
 
-    const exchange = await askQuestion(text, conversationId);
-    setMessages((prev) => [...prev, { role: "assistant", text: exchange.answer }]);
+      const exchange = await askQuestion(text, conversationId);
+      setMessages((prev) => [...prev, { role: "assistant", text: exchange.answer }]);
 
-    if (conversation && !conversation.title) {
-      const title = text.substring(0, 40);
-      const updated = await updateConversation(conversationId, { title });
-      if (updated && onConversationUpdated) onConversationUpdated(updated);
+      if (isNew && onConversationCreated) {
+        const fullConversation = await getConversation(conversationId);
+        if (fullConversation) onConversationCreated(fullConversation);
+      }
+
+      if (conversation && !conversation.title) {
+        const title = text.substring(0, MAX_TITLE_LENGTH);
+        const updated = await updateConversation(conversationId, { title });
+        if (updated && onConversationUpdated) onConversationUpdated(updated);
+      }
+    } catch {
+      setError("Could not send message.");
     }
   }
 
@@ -62,6 +75,7 @@ export default function Conversation({ conversation, onConversationCreated, onCo
             {msg.text}
           </div>
         ))}
+        {error && <p className="conversation-error">{error}</p>}
         <div ref={messagesEndRef} />
       </ContentPanel>
       <div className="conversation-input">

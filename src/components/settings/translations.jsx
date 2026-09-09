@@ -1,6 +1,6 @@
 "use client";
 
-export default function TranslationsConfiguration({ onClose }) {
+export default function TranslationSettings({ onClose }) {
   return (
     <div className="settings-container">
       <div className="settings-nav">

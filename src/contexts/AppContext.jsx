@@ -10,7 +10,6 @@ const initialState = {
   selectedConversationId: null,
   bookmarks: [],
   menuOpen: false,
-  scrollPositions: {},
   ui: {},
 };
 
@@ -80,19 +79,10 @@ function appReducer(state, action) {
         bookmarks: state.bookmarks.filter((b) => b.id !== action.payload),
       };
 
-    case "TOGGLE_MENU":
-      return { ...state, menuOpen: !state.menuOpen };
     case "SET_MENU":
       return { ...state, menuOpen: action.payload };
-    case "SET_SCROLL_POSITION":
-      return {
-        ...state,
-        scrollPositions: { ...state.scrollPositions, [action.payload.key]: action.payload.value },
-      };
     case "SET_UI_STATE":
       return { ...state, ui: { ...state.ui, [action.payload.key]: action.payload.value } };
-    case "RESET_UI":
-      return { ...state, menuOpen: false, scrollPositions: {}, ui: {} };
 
     default:
       return state;
@@ -163,12 +153,8 @@ export function useNavigationContext() {
   const { state, dispatch } = useContext(AppContext);
   return {
     menuOpen: state.menuOpen,
-    scrollPositions: state.scrollPositions,
     ui: state.ui,
-    toggleMenu: useCallback(() => dispatch({ type: "TOGGLE_MENU" }), [dispatch]),
     setMenu: useCallback((v) => dispatch({ type: "SET_MENU", payload: v }), [dispatch]),
-    setScrollPosition: useCallback((key, value) => dispatch({ type: "SET_SCROLL_POSITION", payload: { key, value } }), [dispatch]),
     setUiState: useCallback((key, value) => dispatch({ type: "SET_UI_STATE", payload: { key, value } }), [dispatch]),
-    resetUi: useCallback(() => dispatch({ type: "RESET_UI" }), [dispatch]),
   };
 }

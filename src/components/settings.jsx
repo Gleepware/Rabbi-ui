@@ -2,12 +2,12 @@
 
 import ConversationsSettings from "./settings/manage-conversations";
 import AccountSettings from "./settings/account";
-import TranslationSettings from './settings/translations'
+import TranslationSettings from "./settings/translations";
 import { useNavigationContext } from "../contexts/AppContext";
 
 const menuOptions = {
   "Conversations": { label: "Manage Conversations", component: ConversationsSettings },
-  "Translations": {label: "Manage Translations", component: TranslationSettings},
+  "Translations": { label: "Manage Translations", component: TranslationSettings },
   "Account": { label: "Account", component: AccountSettings },
 };
 
@@ -18,9 +18,9 @@ export default function Settings({ onClose }) {
   const activity = ui[SETTINGS_PANEL_KEY] ?? null;
   const ActiveComponent = activity ? (menuOptions[activity]?.component ?? null) : null;
 
-  const selectMenuItem = item => setUiState(SETTINGS_PANEL_KEY, item)
+  const onMenuItemSelect = (item) => setUiState(SETTINGS_PANEL_KEY, item);
 
-  const returnToMenu = () => selectMenuItem(null)
+  const onMenuReturn = () => onMenuItemSelect(null);
 
   return (
     <div className="questions-container">
@@ -29,11 +29,11 @@ export default function Settings({ onClose }) {
         <button className="standard-btn" onClick={onClose}>Close</button>
       </div>
       {ActiveComponent
-        ? <ActiveComponent onClose={returnToMenu}></ActiveComponent>
+        ? <ActiveComponent onClose={onMenuReturn}></ActiveComponent>
         : <div style={{ padding: "1rem", display: "flex", flexDirection: "column", gap: "0.5rem" }}>
           {Object.keys(menuOptions).map((item) => {
-            const selection = menuOptions[item]
-            return <button key={item} className="standard-btn" style={{ width: "100%" }} onClick={() => selectMenuItem(item)}>
+            const selection = menuOptions[item];
+            return <button key={item} className="standard-btn" style={{ width: "100%" }} onClick={() => onMenuItemSelect(item)}>
               {selection.label}
             </button>
           })}

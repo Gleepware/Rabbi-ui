@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useBibleService } from "../hooks/use-bible-service";
 
-export default function BookmarkEditor({ mode, bookmark, initial, onSave, onClose }) {
+export default function BookmarkEditor({ mode, bookmark, initial, onBookmarkSave, onBookmarkClose }) {
   const currentTranslationId = bookmark?.translationId ?? initial?.translationId ?? null;
   const currentBookId = bookmark?.bookId ?? initial?.bookId ?? null;
   const currentChapter = bookmark?.chapter ?? initial?.chapter ?? 1;
@@ -23,8 +23,8 @@ export default function BookmarkEditor({ mode, bookmark, initial, onSave, onClos
     translationBooks.find((b) => b.id === currentBookId)?.name ?? currentBookId ?? "";
   const label = `${includeTranslation && translationLabel ? `${translationLabel}-` : ""}${bookName}:${currentChapter}`;
 
-  const onBookmarkSave = () => {
-    onSave({
+  const onBookmarkSaveClick = () => {
+    onBookmarkSave({
       title: label,
       translationId: currentTranslationId,
       bookId: currentBookId,
@@ -40,7 +40,7 @@ export default function BookmarkEditor({ mode, bookmark, initial, onSave, onClos
           <h2 className="bookmarks-editor-title">
             {mode === "edit" ? "Edit Bookmark" : "Create Bookmark"}
           </h2>
-          <button className="standard-btn" onClick={onClose}>Cancel</button>
+          <button className="standard-btn" onClick={onBookmarkClose}>Cancel</button>
         </div>
         <div className="bookmarks-editor-body">
           <p className="bookmarks-label">{label}</p>
@@ -54,7 +54,7 @@ export default function BookmarkEditor({ mode, bookmark, initial, onSave, onClos
           </label>
         </div>
         <div className="bookmarks-editor-footer">
-          <button className="standard-btn" onClick={onBookmarkSave}>Save</button>
+          <button className="standard-btn" onClick={onBookmarkSaveClick}>Save</button>
         </div>
       </div>
     </div>

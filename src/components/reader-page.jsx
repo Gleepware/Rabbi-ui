@@ -6,13 +6,34 @@ export default function ReaderPage() {
   const reader = ui.reader ?? {};
   const { translationId, bookId, chapter } = reader;
 
-  const { verses, loadingVerses, error, staleDataAvailable, clearStaleNotice } =
+  const { translationBooks, verses, loadingVerses, error, staleDataAvailable, clearStaleNotice } =
     useBibleService({ translationId, bookId, chapter });
+
+  const currentChapter = chapter ?? 1;
+  const selectedBook = bookId
+    ? translationBooks.find((b) => b.id === bookId) ?? null
+    : null;
 
   if (!translationId || !bookId) {
     return (
       <div className="p-4 text-center opacity-50">
         Select a translation and book above to begin reading.
+      </div>
+    );
+  }
+
+  if (translationBooks.length > 0 && !selectedBook) {
+    return (
+      <div className="p-4 text-center opacity-70">
+        This book is not available in the selected translation.
+      </div>
+    );
+  }
+
+  if (selectedBook && currentChapter > selectedBook.chapterCount) {
+    return (
+      <div className="p-4 text-center opacity-70">
+        This chapter does not exist in the selected book.
       </div>
     );
   }

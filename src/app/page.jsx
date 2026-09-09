@@ -4,7 +4,7 @@ import { useRef } from "react";
 import ContentPanel from "../components/content-panel";
 import Navbar from "../components/navbar";
 import ReaderPage from "../components/reader-page";
-import Conversation from "../components/questions/conversations";
+import Conversations from "../components/questions/conversations";
 import Settings from "../components/settings";
 import { useReaderContext } from "../contexts/AppContext";
 
@@ -22,7 +22,7 @@ const Placeholder = () => {
 
 const activities = {
   "Reader": ReaderPage,
-  "Conversation": Conversation,
+  "Conversation": Conversations,
   "Settings": Settings,
   "About Rabbi": Placeholder
 }
@@ -30,7 +30,6 @@ const activities = {
 const menuActivities = [
   { key: "Settings", label: "Settings" },
   { key: "About Rabbi", label: "About Rabbi" },
-  { key: "Exit", label: "Exit" }
 ]
 
 export default function Home() {
@@ -38,21 +37,20 @@ export default function Home() {
   const previousActivity = useRef("Reader");
   const ActiveComponent = activities[activity] ?? Error;
 
-  const switchActivity = (newActivity) => {
+  const onActivitySwitch = (newActivity) => {
     if (newActivity === "Settings") {
       previousActivity.current = activity;
     }
-    setActivity(newActivity)
+    setActivity(newActivity);
   }
 
   const onActiveComponentClose = () => {
-    setActivity(previousActivity.current)
+    setActivity(previousActivity.current);
   }
-
 
   return (
     <>
-      <Navbar options={menuActivities} onSelect={(item) => switchActivity(item)} />
+      <Navbar options={menuActivities} onSelect={(item) => onActivitySwitch(item)} />
       <ContentPanel>
         {hydrated ? <ActiveComponent onClose={() => onActiveComponentClose()} /> : null}
       </ContentPanel>

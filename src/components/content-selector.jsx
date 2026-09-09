@@ -16,7 +16,10 @@ export default function ContentSelector() {
 
   const containerRef = useRef(null);
   const readerRef = useRef(reader);
-  readerRef.current = reader;
+
+  useEffect(() => {
+    readerRef.current = reader;
+  });
 
   const setReader = (patch) =>
     setUiState("reader", { ...reader, ...patch });
@@ -31,15 +34,6 @@ export default function ContentSelector() {
       onTranslationLoaded: (list) => {
         if (!readerRef.current.translationId && list.length > 0) {
           setReader({ translationId: list[0].id, bookId: null, chapter: 1 });
-        }
-      },
-      onBooksLoaded: (books) => {
-        const currentBookId = readerRef.current.bookId;
-        if (
-          books.length > 0 &&
-          !books.some((b) => b.id === currentBookId)
-        ) {
-          setReader({ bookId: books[0].id, chapter: 1 });
         }
       },
     });
@@ -75,7 +69,7 @@ export default function ContentSelector() {
     setBook(e.target.value);
   };
 
-  const changeChapter = (delta) => {
+  const onChapterChange = (delta) => {
     const next = chapter + delta;
     if (next < 1 || next > chapterCount) return;
     setChapter(next);
@@ -146,7 +140,7 @@ export default function ContentSelector() {
         <button
           className="chapter-pill-btn"
           aria-label="Previous chapter"
-          onClick={() => changeChapter(-1)}
+          onClick={() => onChapterChange(-1)}
           disabled={chapter <= 1}
         >
           <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor">
@@ -169,7 +163,7 @@ export default function ContentSelector() {
         <button
           className="chapter-pill-btn"
           aria-label="Next chapter"
-          onClick={() => changeChapter(1)}
+          onClick={() => onChapterChange(1)}
           disabled={chapter >= chapterCount}
         >
           <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor">

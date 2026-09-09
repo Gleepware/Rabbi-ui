@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import Conversation from "./conversation";
 import { getConversations, createConversation } from "../../services/conversation-service";
 import { useConversationsContext } from "../../contexts/AppContext";
@@ -11,10 +11,13 @@ export default function Conversations({ onClose }) {
     selectedId,
     setConversations,
     addConversation,
+    updateConversation,
     selectConversation,
   } = useConversationsContext();
 
   const selectedConversation = conversations.find((c) => c.id === selectedId) ?? null;
+
+  const restoredSelectedIdRef = useRef(selectedId);
 
   const onConversationCreate = async () => {
     const newConversation = await createConversation({ title: "" });
@@ -23,10 +26,14 @@ export default function Conversations({ onClose }) {
   };
 
   useEffect(() => {
-    getConversations().then((data) => {
-      setConversations(data);
-      if (data.length > 0) selectConversation(data[0].id);
-    });
+    getConversations()
+      .then((data) => {
+        setConversations(data);
+        if (data.length > 0 && !data.some((c) => c.id === restoredSelectedIdRef.current)) {
+          selectConversation(data[0].id);
+        }
+      })
+      .catch(() => {});
   }, [setConversations, selectConversation]);
 
   return (
@@ -43,14 +50,14 @@ export default function Conversations({ onClose }) {
             </option>
           ))}
         </select>
-        <button className="standard-btn" onClick={onConversationCreate}>New</button>
+        <button className="standard-btn" disabled={conversations.length === 0} onClick={onConversationCreate}>New</button>
         <button className="standard-btn" onClick={onClose}>Close</button>
       </div>
       <Conversation conversation={selectedConversation} onConversationCreated={(newConversation) => {
         addConversation(newConversation);
         selectConversation(newConversation.id);
       }} onConversationUpdated={(updated) => {
-        // handled via context in child
+        updateConversation(updated);
       }}></Conversation>
     </div>
   );
