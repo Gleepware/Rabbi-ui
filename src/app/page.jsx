@@ -33,14 +33,14 @@ export default function Home() {
   const ActiveComponent = activities[activity] ?? Error;
 
   const onActivitySwitch = (newActivity) => {
-    if (newActivity === "Settings") {
+    if (newActivity !== "Reader") {
       previousActivity.current = activity;
     }
     setActivity(newActivity);
   }
 
   const onActiveComponentClose = () => {
-    setActivity(previousActivity.current);
+    setActivity(activity === "Conversation" ? "Reader" : previousActivity.current);
   }
 
   return (

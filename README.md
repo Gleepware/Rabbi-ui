@@ -1,10 +1,12 @@
 
 ## TODO:
 
+## Bugs
+* when closing the "about" box, the ui is blank.  It should return to whatever was visible when it was opened.
+
 
 ### UI
-* Keep state across loads
-
+* update button scheme (placement, iconology)
 * add about
   * Overview (version, release, description)
   * EULA ?Legalese?
@@ -27,6 +29,7 @@
 * add bible selection UI
   * make it responsive
 * Add bookmarks
+* Keep state across loads
 
 
 ### Cloud
