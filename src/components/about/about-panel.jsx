@@ -1,9 +1,13 @@
 "use client";
 
 import { useState } from "react";
+import Eula from "./eula";
 
 const APP_NAME = "Rabbi";
 const APP_VERSION = "0.1.0";
+const APP_RELEASE = "0.1.0";
+const APP_DESCRIPTION =
+  "Rabbi is a biblical research workspace for reading passages, comparing translations, and keeping AI-guided study conversations alongside the text.";
 
 const DetailsRow = ({ label, value }) => (
   <div className="about-row">
@@ -15,16 +19,13 @@ const DetailsRow = ({ label, value }) => (
 const AboutTab = () => (
   <div className="about-body">
     <h3 className="about-title">{APP_NAME}</h3>
+    <p className="about-description">{APP_DESCRIPTION}</p>
     <DetailsRow label="Version" value={APP_VERSION} />
+    <DetailsRow label="Release Date" value={APP_RELEASE} />
   </div>
 );
 
-const EulaTab = () => (
-  <div className="about-body">
-    <h3 className="about-title">End User License Agreement</h3>
-    <p>End User License Agreement text is yet to be added.</p>
-  </div>
-);
+const EulaTab = () => <Eula />;
 
 const CopyrightsTab = () => (
   <div className="about-body">

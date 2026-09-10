@@ -7,7 +7,9 @@ test("defaults to the About tab", () => {
   render(<AboutPanel onClose={vi.fn()} />);
   expect(screen.getByRole("heading", { name: "Rabbi" })).toBeInTheDocument();
   expect(screen.getByText("Version")).toBeInTheDocument();
-  expect(screen.getByText("0.1.0")).toBeInTheDocument();
+  expect(screen.getAllByText("0.1.0")).toHaveLength(2);
+  expect(screen.getByText("Release Date")).toBeInTheDocument();
+  expect(screen.getByText(/studying and exploring Jewish texts/)).toBeInTheDocument();
 });
 
 test("switches between tabs", async () => {
