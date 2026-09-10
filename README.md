@@ -1,10 +1,10 @@
 
 ## TODO:
 
+
 ### UI
 * Keep state across loads
 
-* add conversation management
 * add about
   * Overview (version, release, description)
   * EULA ?Legalese?
@@ -22,6 +22,11 @@
 * bind bible to cloud
 * bind conversation to cloud
 
+#### Done
+* add conversation management
+* add bible selection UI
+  * make it responsive
+* Add bookmarks
 
 
 ### Cloud
@@ -30,3 +35,6 @@
 * push function apps
 * verify API/function apps
 * plan auto-scaling
+
+
+#### Done
