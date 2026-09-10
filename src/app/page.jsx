@@ -6,6 +6,7 @@ import Navbar from "../components/navbar";
 import ReaderPage from "../components/reader-page";
 import Conversations from "../components/questions/conversations";
 import Settings from "../components/settings";
+import AboutPanel from "../components/about/about-panel";
 import { useReaderContext } from "../contexts/AppContext";
 
 const Error = () => {
@@ -14,17 +15,11 @@ const Error = () => {
   </>
 }
 
-const Placeholder = () => {
-  return <>
-    Under Construction
-  </>
-}
-
 const activities = {
   "Reader": ReaderPage,
   "Conversation": Conversations,
   "Settings": Settings,
-  "About Rabbi": Placeholder
+  "About Rabbi": AboutPanel
 }
 
 const menuActivities = [
