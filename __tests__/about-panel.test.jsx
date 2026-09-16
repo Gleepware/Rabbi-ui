@@ -9,7 +9,7 @@ test("defaults to the About tab", () => {
   expect(screen.getByText("Version")).toBeInTheDocument();
   expect(screen.getAllByText("0.1.0")).toHaveLength(2);
   expect(screen.getByText("Release Date")).toBeInTheDocument();
-  expect(screen.getByText(/studying and exploring Jewish texts/)).toBeInTheDocument();
+  expect(screen.getByText(/biblical research workspace/)).toBeInTheDocument();
 });
 
 test("switches between tabs", async () => {

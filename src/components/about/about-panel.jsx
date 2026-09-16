@@ -2,6 +2,8 @@
 
 import { useState } from "react";
 import Eula from "./eula";
+import Copyrights from "./copyrights";
+import Attributions from "./attributions";
 
 const APP_NAME = "Rabbi";
 const APP_VERSION = "0.1.0";
@@ -27,19 +29,9 @@ const AboutTab = () => (
 
 const EulaTab = () => <Eula />;
 
-const CopyrightsTab = () => (
-  <div className="about-body">
-    <h3 className="about-title">Copyrights</h3>
-    <p>Copyright information is yet to be added.</p>
-  </div>
-);
+const CopyrightsTab = () => <Copyrights />;
 
-const SourcesTab = () => (
-  <div className="about-body">
-    <h3 className="about-title">Sources</h3>
-    <p>Source references are yet to be added.</p>
-  </div>
-);
+const SourcesTab = () => <Attributions />;
 
 const tabs = {
   "About": AboutTab,
