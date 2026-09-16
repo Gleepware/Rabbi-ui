@@ -44,3 +44,6 @@ next-env.d.ts
 android/
 ios/
 .vscode/firefox-profile/
+
+# agent config
+.opencode/

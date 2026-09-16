@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import { useBibleService } from "../hooks/use-bible-service";
 import { useReaderContext, useNavigationContext } from "../contexts/AppContext";
+import { ChevronLeftIcon, ChevronRightIcon } from "./icons";
 
 export default function ContentSelector() {
   const { hydrated } = useReaderContext();
@@ -143,9 +144,7 @@ export default function ContentSelector() {
           onClick={() => onChapterChange(-1)}
           disabled={chapter <= 1}
         >
-          <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor">
-            <path d="M15 5l-7 7 7 7z" />
-          </svg>
+          <ChevronLeftIcon />
         </button>
         <select
           className="content-selector-select"
@@ -166,9 +165,7 @@ export default function ContentSelector() {
           onClick={() => onChapterChange(1)}
           disabled={chapter >= chapterCount}
         >
-          <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor">
-            <path d="M9 5l7 7-7 7z" />
-          </svg>
+          <ChevronRightIcon />
         </button>
       </div>
     </div>

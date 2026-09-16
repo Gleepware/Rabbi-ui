@@ -7,25 +7,43 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
+    "test": "vitest run",
     "cap:sync": "npx cap sync",
     "cap:android": "npx cap open android",
     "cap:ios": "npx cap open ios",
     "build:android": "npm run build && npx cap sync android && npx cap open android",
-    "build:ios": "npm run build && npx cap sync ios && npx cap open ios"
+    "build:ios": "npm run build && npx cap sync ios && npx cap open ios",
+    "release": "semantic-release",
+    "release:dry-run": "semantic-release --dry-run",
+    "verify": "npm run lint && npm run test && npm run build && npm run release:dry-run"
   },
   "dependencies": {
     "@capacitor/android": "^8.5.0",
     "@capacitor/cli": "^8.5.0",
     "@capacitor/core": "^8.5.0",
     "@capacitor/ios": "^8.5.0",
+    "@mdx-js/loader": "^3.1.1",
+    "@mdx-js/react": "^3.1.1",
+    "@next/mdx": "^16.3.4",
     "next": "16.3.1",
     "react": "19.2.8",
     "react-dom": "19.2.8"
   },
   "devDependencies": {
+    "@semantic-release/changelog": "^7.0.0",
+    "@semantic-release/exec": "^7.1.0",
+    "@semantic-release/git": "^11.0.1",
     "@tailwindcss/postcss": "^4",
+    "@testing-library/dom": "^10.4.1",
+    "@testing-library/jest-dom": "^7.0.1",
+    "@testing-library/react": "^16.3.3",
+    "@testing-library/user-event": "^14.6.7",
+    "@vitejs/plugin-react": "^6.1.1",
     "eslint": "^9",
     "eslint-config-next": "16.3.1",
-    "tailwindcss": "^4"
+    "jsdom": "^30.0.1",
+    "semantic-release": "^25.0.9",
+    "tailwindcss": "^4",
+    "vitest": "^5.0.0"
   }
 }

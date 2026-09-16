@@ -6,6 +6,7 @@ import Navbar from "../components/navbar";
 import ReaderPage from "../components/reader-page";
 import Conversations from "../components/questions/conversations";
 import Settings from "../components/settings";
+import AboutPanel from "../components/about/about-panel";
 import { useReaderContext } from "../contexts/AppContext";
 
 const Error = () => {
@@ -14,17 +15,11 @@ const Error = () => {
   </>
 }
 
-const Placeholder = () => {
-  return <>
-    Under Construction
-  </>
-}
-
 const activities = {
   "Reader": ReaderPage,
   "Conversation": Conversations,
   "Settings": Settings,
-  "About Rabbi": Placeholder
+  "About Rabbi": AboutPanel
 }
 
 const menuActivities = [
@@ -38,14 +33,14 @@ export default function Home() {
   const ActiveComponent = activities[activity] ?? Error;
 
   const onActivitySwitch = (newActivity) => {
-    if (newActivity === "Settings") {
+    if (newActivity !== "Reader") {
       previousActivity.current = activity;
     }
     setActivity(newActivity);
   }
 
   const onActiveComponentClose = () => {
-    setActivity(previousActivity.current);
+    setActivity(activity === "Conversation" ? "Reader" : previousActivity.current);
   }
 
   return (
