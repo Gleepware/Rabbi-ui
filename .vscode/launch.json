@@ -29,5 +29,14 @@
         "browser.taskbarTabs.enabled": false
       }
     }
+  ],
+  "compounds": [
+    {
+      "name": "UI: debug full stack",
+      "configurations": [
+        "UI: Next.js dev server",
+        "UI: Firefox client"
+      ]
+    }
   ]
 }
