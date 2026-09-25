@@ -34,7 +34,7 @@ export default function BookmarkRow({
       </button>
       <button
         type="button"
-        className="bookmarks-icon-btn"
+        className="icon-btn"
         aria-label={`Edit ${bookmark.title}`}
         onClick={() => onEdit(bookmark)}
       >
@@ -42,7 +42,7 @@ export default function BookmarkRow({
       </button>
       <button
         type="button"
-        className="bookmarks-icon-btn"
+        className="icon-btn"
         aria-label={`Delete ${bookmark.title}`}
         onClick={() => onDelete(bookmark)}
       >

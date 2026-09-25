@@ -36,7 +36,7 @@ test("opens the translations panel and Back returns to the menu", async () => {
   await user.click(screen.getByRole("button", { name: "Manage Translations" }));
   expect(screen.getByRole("heading", { name: "Manage Translations" })).toBeInTheDocument();
 
-  await user.click(screen.getByRole("button", { name: "Back" }));
+  await user.click(screen.getByRole("button", { name: "Close" }));
   expect(screen.getByRole("button", { name: "Account" })).toBeInTheDocument();
 });
 
@@ -47,7 +47,7 @@ test("opens the account panel and Back returns to the menu", async () => {
   await user.click(screen.getByRole("button", { name: "Account" }));
   expect(screen.getByRole("heading", { name: "Account Settings" })).toBeInTheDocument();
 
-  await user.click(screen.getByRole("button", { name: "Back" }));
+  await user.click(screen.getByRole("button", { name: "Close" }));
   expect(screen.getByRole("button", { name: "Manage Conversations" })).toBeInTheDocument();
 });
 
@@ -58,6 +58,6 @@ test("manage conversations shows the empty state and Back returns to the menu", 
   await user.click(screen.getByRole("button", { name: "Manage Conversations" }));
   expect(await screen.findByText("No conversations")).toBeInTheDocument();
 
-  await user.click(screen.getByRole("button", { name: "Back" }));
+  await user.click(screen.getByRole("button", { name: "Close" }));
   expect(screen.getByRole("button", { name: "Account" })).toBeInTheDocument();
 });
