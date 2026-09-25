@@ -1,4 +1,4 @@
-import { DeleteIcon, EditIcon } from "./icons";
+import { CheckIcon, CloseXIcon, DeleteIcon, EditIcon } from "./icons";
 
 export default function BookmarkRow({
   bookmark,
@@ -13,8 +13,12 @@ export default function BookmarkRow({
     return (
       <div className="bookmarks-list-item">
         <span className="bookmarks-list-title">Delete &quot;{bookmark.title}&quot;?</span>
-        <button className="standard-btn" onClick={onConfirmDelete}>Yes</button>
-        <button className="standard-btn" onClick={onCancelDelete}>No</button>
+        <button type="button" className="icon-btn" aria-label="Delete" onClick={onConfirmDelete}>
+          <CheckIcon />
+        </button>
+        <button type="button" className="icon-btn" aria-label="Cancel" onClick={onCancelDelete}>
+          <CloseXIcon />
+        </button>
       </div>
     );
   }

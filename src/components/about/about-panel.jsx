@@ -4,6 +4,7 @@ import { useState } from "react";
 import Eula from "./eula";
 import Copyrights from "./copyrights";
 import Attributions from "./attributions";
+import { CloseXIcon } from "../icons";
 
 const APP_NAME = "Rabbi";
 const APP_VERSION = "0.1.0";
@@ -50,7 +51,9 @@ export default function AboutPanel({ onClose }) {
     <div className="about-container">
       <div className="about-nav">
         <h2 style={{ flex: 1 }}>About Rabbi</h2>
-        <button className="standard-btn" onClick={onClose}>Close</button>
+        <button type="button" className="icon-btn" aria-label="Close" onClick={onClose}>
+          <CloseXIcon />
+        </button>
       </div>
       <div className="about-tabs">
         {Object.keys(tabs).map((tab) => (

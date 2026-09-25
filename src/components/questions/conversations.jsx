@@ -4,6 +4,7 @@ import { useEffect, useRef } from "react";
 import Conversation from "./conversation";
 import { getConversations, createConversation } from "../../services/conversation-service";
 import { useConversationsContext } from "../../contexts/AppContext";
+import { CloseXIcon, PlusIcon } from "../icons";
 
 export default function Conversations({ onClose }) {
   const {
@@ -50,8 +51,18 @@ export default function Conversations({ onClose }) {
             </option>
           ))}
         </select>
-        <button className="standard-btn" disabled={conversations.length === 0} onClick={onConversationCreate}>New</button>
-        <button className="standard-btn" onClick={onClose}>Close</button>
+        <button
+          type="button"
+          className="icon-btn"
+          aria-label="New conversation"
+          disabled={conversations.length === 0}
+          onClick={onConversationCreate}
+        >
+          <PlusIcon />
+        </button>
+        <button type="button" className="icon-btn" aria-label="Close" onClick={onClose}>
+          <CloseXIcon />
+        </button>
       </div>
       <Conversation conversation={selectedConversation} onConversationCreated={(newConversation) => {
         addConversation(newConversation);

@@ -7,7 +7,7 @@ import {
   deleteConversation as deleteConversationApi,
 } from "../../services/conversation-service";
 import { useConversationsContext } from "../../contexts/AppContext";
-import { DeleteIcon } from "../icons";
+import { CheckIcon, CloseXIcon, DeleteIcon, EditIcon } from "../icons";
 
 export default function ConversationsSettings({ onClose }) {
   const {
@@ -55,7 +55,9 @@ export default function ConversationsSettings({ onClose }) {
     <div className="settings-container">
       <div className="settings-nav">
         <h2 style={{ flex: 1 }}>Manage Conversations</h2>
-        <button className="standard-btn" onClick={onClose}>Back</button>
+        <button type="button" className="icon-btn" aria-label="Back" onClick={onClose}>
+          <CloseXIcon />
+        </button>
       </div>
       <div className="settings-list">
         {conversations.length === 0 && <p>No conversations</p>}
@@ -74,29 +76,39 @@ export default function ConversationsSettings({ onClose }) {
                   autoFocus
                 />
                 <button
-                  className="standard-btn"
+                  type="button"
+                  className="icon-btn"
+                  aria-label="Save"
                   onClick={onRenameSave}
                   disabled={!draftTitle.trim()}
                 >
-                  Save
+                  <CheckIcon />
                 </button>
-                <button className="standard-btn" onClick={onRenameCancel}>Cancel</button>
+                <button type="button" className="icon-btn" aria-label="Cancel" onClick={onRenameCancel}>
+                  <CloseXIcon />
+                </button>
               </>
             ) : deletingId === c.id ? (
               <>
                 <span className="settings-list-title">
                   Delete &quot;{c.title || "Untitled"}&quot;?
                 </span>
-                <button className="standard-btn" onClick={onDeleteConfirm}>Yes</button>
-                <button className="standard-btn" onClick={() => setDeletingId(null)}>No</button>
+                <button type="button" className="icon-btn" aria-label="Delete" onClick={onDeleteConfirm}>
+                  <CheckIcon />
+                </button>
+                <button type="button" className="icon-btn" aria-label="Cancel" onClick={() => setDeletingId(null)}>
+                  <CloseXIcon />
+                </button>
               </>
             ) : (
               <>
                 <span className="settings-list-title">{c.title || "Untitled"}</span>
-                <button className="standard-btn" onClick={() => onRenameStart(c)}>Rename</button>
+                <button type="button" className="icon-btn" aria-label="Rename" onClick={() => onRenameStart(c)}>
+                  <EditIcon />
+                </button>
                 <button
-                  className="standard-btn"
-                  style={{ padding: "2px" }}
+                  type="button"
+                  className="icon-btn"
                   aria-label={`Delete ${c.title || "Untitled"}`}
                   onClick={() => setDeletingId(c.id)}
                 >

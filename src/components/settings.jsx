@@ -4,6 +4,7 @@ import ConversationsSettings from "./settings/manage-conversations";
 import AccountSettings from "./settings/account";
 import TranslationSettings from "./settings/translations";
 import { useNavigationContext } from "../contexts/AppContext";
+import { CloseXIcon } from "./icons";
 
 const menuOptions = {
   "Conversations": { label: "Manage Conversations", component: ConversationsSettings },
@@ -24,10 +25,14 @@ export default function Settings({ onClose }) {
 
   return (
     <div className="questions-container">
-      <div className="questions-nav">
-        <h2 style={{ flex: 1 }}>Settings</h2>
-        <button className="standard-btn" onClick={onClose}>Close</button>
-      </div>
+      {!ActiveComponent && (
+        <div className="questions-nav">
+          <h2 style={{ flex: 1 }}>Settings</h2>
+          <button type="button" className="icon-btn" aria-label="Close" onClick={onClose}>
+            <CloseXIcon />
+          </button>
+        </div>
+      )}
       {ActiveComponent
         ? <ActiveComponent onClose={onMenuReturn}></ActiveComponent>
         : <div style={{ padding: "1rem", display: "flex", flexDirection: "column", gap: "0.5rem" }}>
