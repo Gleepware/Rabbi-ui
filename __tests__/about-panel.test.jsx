@@ -3,6 +3,29 @@ import userEvent from "@testing-library/user-event";
 import { vi } from "vitest";
 import AboutPanel from "../src/components/about/about-panel";
 
+vi.mock("../src/services/copyright-service", () => {
+  const bundle = {
+    data: [
+      {
+        bibleId: "de4e12af7f28f599-01",
+        translationName: "King James Version",
+        language: "English",
+        abbreviationLocal: "KJV",
+        copyright: { name: "King James Version", url: "", notice: "Public domain", requirements: [] },
+      },
+    ],
+    retrievedAt: 1727123456789,
+    expiresAt: 1727123456789 + 30 * 24 * 60 * 60 * 1000,
+  };
+  return {
+    COPYRIGHTS_CACHE_KEY: "copyrights-cache",
+    COPYRIGHTS_TTL_MS: 30 * 24 * 60 * 60 * 1000,
+    API_BASE_URL: "http://localhost:8080",
+    getCachedCopyrights: vi.fn(() => bundle),
+    scheduleCopyrightsRefresh: vi.fn(() => Promise.resolve(bundle)),
+  };
+});
+
 test("defaults to the About tab", () => {
   render(<AboutPanel onClose={vi.fn()} />);
   expect(screen.getByRole("heading", { name: "Rabbi" })).toBeInTheDocument();
@@ -23,6 +46,10 @@ test("switches between tabs", async () => {
 
   await user.click(screen.getByRole("button", { name: "Copyrights" }));
   expect(screen.getByRole("heading", { name: "Copyrights" })).toBeInTheDocument();
+  expect(screen.getByText(/Copyright data retrieved/)).toBeInTheDocument();
+  expect(
+    screen.getByRole("heading", { name: "King James Version (KJV)" })
+  ).toBeInTheDocument();
 
   await user.click(screen.getByRole("button", { name: "Sources" }));
   expect(screen.getByRole("heading", { name: "Sources" })).toBeInTheDocument();

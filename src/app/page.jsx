@@ -8,6 +8,7 @@ import Conversations from "../components/questions/conversations";
 import Settings from "../components/settings";
 import AboutPanel from "../components/about/about-panel";
 import { useReaderContext } from "../contexts/AppContext";
+import useCopyrightsPrewarm from "../hooks/use-copyrights-prewarm";
 
 const Error = () => {
   return <>
@@ -31,6 +32,8 @@ export default function Home() {
   const { activity, setActivity, hydrated } = useReaderContext();
   const previousActivity = useRef("Reader");
   const ActiveComponent = activities[activity] ?? Error;
+
+  useCopyrightsPrewarm();
 
   const onActivitySwitch = (newActivity) => {
     if (newActivity !== "Reader") {
