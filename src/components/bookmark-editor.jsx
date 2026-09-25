@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useBibleService } from "../hooks/use-bible-service";
+import { CheckIcon, CloseXIcon } from "./icons";
 
 export default function BookmarkEditor({ mode, bookmark, initial, onBookmarkSave, onBookmarkClose }) {
   const currentTranslationId = bookmark?.translationId ?? initial?.translationId ?? null;
@@ -40,7 +41,9 @@ export default function BookmarkEditor({ mode, bookmark, initial, onBookmarkSave
           <h2 className="bookmarks-editor-title">
             {mode === "edit" ? "Edit Bookmark" : "Create Bookmark"}
           </h2>
-          <button className="standard-btn" onClick={onBookmarkClose}>Cancel</button>
+          <button type="button" className="icon-btn" aria-label="Close" onClick={onBookmarkClose}>
+            <CloseXIcon />
+          </button>
         </div>
         <div className="bookmarks-editor-body">
           <p className="bookmarks-label">{label}</p>
@@ -54,7 +57,9 @@ export default function BookmarkEditor({ mode, bookmark, initial, onBookmarkSave
           </label>
         </div>
         <div className="bookmarks-editor-footer">
-          <button className="standard-btn" onClick={onBookmarkSaveClick}>Save</button>
+          <button type="button" className="icon-btn" aria-label="Save bookmark" onClick={onBookmarkSaveClick}>
+            <CheckIcon />
+          </button>
         </div>
       </div>
     </div>

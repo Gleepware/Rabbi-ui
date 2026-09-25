@@ -17,7 +17,7 @@ function readerPrompt() {
 
 async function openConversation(user) {
   await user.click(screen.getByRole("button", { name: "Open Conversation" }));
-  await screen.findByRole("button", { name: "New" });
+  await screen.findByRole("button", { name: "New conversation" });
 }
 
 async function openMenu(user) {
@@ -35,7 +35,7 @@ test("conversation icon toggles chat and back to the Reader", async () => {
   await readerPrompt();
 
   await user.click(screen.getByRole("button", { name: "Open Conversation" }));
-  expect(await screen.findByRole("button", { name: "New" })).toBeInTheDocument();
+  expect(await screen.findByRole("button", { name: "New conversation" })).toBeInTheDocument();
 
   await user.click(screen.getByRole("button", { name: "Open Conversation" }));
   expect(await readerPrompt()).toBeInTheDocument();
@@ -79,7 +79,7 @@ test("closing About returns to the Conversation opened before it, and closing ch
   expect(await screen.findByRole("heading", { name: "About Rabbi" })).toBeInTheDocument();
 
   await user.click(screen.getByRole("button", { name: "Close" }));
-  expect(await screen.findByRole("button", { name: "New" })).toBeInTheDocument();
+  expect(await screen.findByRole("button", { name: "New conversation" })).toBeInTheDocument();
 
   await user.click(screen.getByRole("button", { name: "Close" }));
   expect(await readerPrompt()).toBeInTheDocument();
@@ -93,5 +93,5 @@ test("the active activity persists across remounts", async () => {
 
   first.unmount();
   renderApp();
-  expect(await screen.findByRole("button", { name: "New" })).toBeInTheDocument();
+  expect(await screen.findByRole("button", { name: "New conversation" })).toBeInTheDocument();
 });

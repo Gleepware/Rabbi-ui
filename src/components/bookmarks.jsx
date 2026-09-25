@@ -10,7 +10,7 @@ import {
 import useClickOutside from "../hooks/use-click-outside";
 import BookmarkEditor from "./bookmark-editor";
 import BookmarkRow from "./bookmark-row";
-import { BookmarkIcon } from "./icons";
+import { BookmarkIcon, CloseXIcon, PlusIcon } from "./icons";
 
 export default function Bookmarks() {
   const {
@@ -111,8 +111,12 @@ export default function Bookmarks() {
         <div className="bookmarks-panel">
           <div className="bookmarks-panel-header">
             <h2 className="bookmarks-panel-title">Bookmarks</h2>
-            <button className="standard-btn" onClick={onBookmarkCreate}>Create</button>
-            <button className="standard-btn" onClick={() => setOpen(false)}>Close</button>
+            <button type="button" className="icon-btn" aria-label="Create bookmark" onClick={onBookmarkCreate}>
+              <PlusIcon />
+            </button>
+            <button type="button" className="icon-btn" aria-label="Close" onClick={() => setOpen(false)}>
+              <CloseXIcon />
+            </button>
           </div>
           <div className="bookmarks-list">
             {bookmarks.length === 0 && (

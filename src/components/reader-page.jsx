@@ -1,5 +1,6 @@
 import { useNavigationContext } from "../contexts/AppContext";
 import { useBibleService } from "../hooks/use-bible-service";
+import { CloseXIcon } from "./icons";
 
 export default function ReaderPage() {
   const { ui } = useNavigationContext();
@@ -59,23 +60,14 @@ export default function ReaderPage() {
       {staleDataAvailable && (
         <div className="sticky top-0 z-10 flex items-center justify-between gap-2 bg-yellow-100 px-4 py-2 text-sm text-yellow-900 border-b border-yellow-300">
           <span>New content loaded</span>
-          <div className="flex items-center gap-2">
-            <button
-              type="button"
-              onClick={clearStaleNotice}
-              className="rounded bg-yellow-500 px-2 py-1 text-white"
-            >
-              OK
-            </button>
-            <button
-              type="button"
-              onClick={clearStaleNotice}
-              aria-label="Close"
-              className="text-yellow-900"
-            >
-              &times;
-            </button>
-          </div>
+          <button
+            type="button"
+            className="icon-btn icon-btn-inherit"
+            aria-label="Close"
+            onClick={clearStaleNotice}
+          >
+            <CloseXIcon size={16} />
+          </button>
         </div>
       )}
       <div className="p-4">

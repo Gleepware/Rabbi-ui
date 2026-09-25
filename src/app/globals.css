@@ -195,6 +195,39 @@ body {
   cursor: not-allowed;
 }
 
+.icon-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2rem;
+  height: 2rem;
+  padding: 0;
+  border: none;
+  background: none;
+  color: var(--foreground);
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.icon-btn:active {
+  background: var(--foreground);
+  color: var(--background);
+}
+
+.icon-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.icon-btn-inherit {
+  color: inherit;
+}
+
+.icon-btn-inherit:active {
+  background: none;
+  color: inherit;
+}
+
 .conversation {
   display: flex;
   flex-direction: column;
