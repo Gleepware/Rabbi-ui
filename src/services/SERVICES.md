@@ -189,7 +189,7 @@ Sends the question to an LLM (OpenRouter / `openai/gpt-5.2`), appends both the q
 
 ## Translations (Bible) API
 
-**Base URL:** `http://localhost:7073/api/translations` (local dev)
+**Base URL:** `http://localhost:7073/api/bible/translations` (local dev)
 
 **User identification:** Same user-ID header as Conversations.
 
@@ -197,9 +197,9 @@ Sends the question to an LLM (OpenRouter / `openai/gpt-5.2`), appends both the q
 
 | Method | URL | Description |
 |--------|-----|-------------|
-| `READ` | `/translations` | List all available translations |
-| `READ` | `/translations/{translationId}` | Get a single translation with its books |
-| `READ` | `/translations/{translationId}/{bookId}/{chapterId}` | Get a specific chapter |
+| `READ` | `/bible/translations` | List all available translations |
+| `READ` | `/bible/translations/{translationId}` | Get a single translation with its books |
+| `READ` | `/bible/translations/{translationId}/{bookId}/{chapterId}` | Get a specific chapter |
 
 ### Request / Response shapes
 

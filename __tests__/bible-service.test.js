@@ -27,7 +27,7 @@ describe("bible-service", () => {
     const result = await getTranslations();
 
     expect(fetchMock).toHaveBeenCalledWith(
-      `${API_BASE_URL}/api/translations`,
+      `${API_BASE_URL}/api/bible/translations`,
       expect.objectContaining({ method: "READ" })
     );
     expect(result).toEqual(TRANSLATIONS);
@@ -47,7 +47,7 @@ describe("bible-service", () => {
 
     expect(fetchMock).toHaveBeenNthCalledWith(
       1,
-      `${API_BASE_URL}/api/translations/${KJV}`,
+      `${API_BASE_URL}/api/bible/translations/${KJV}`,
       expect.objectContaining({ method: "READ" })
     );
     expect(detail.books).toHaveLength(1);
@@ -75,7 +75,7 @@ describe("bible-service", () => {
     const verses = await getChapter(KJV, "GEN", 1);
 
     expect(fetchMock).toHaveBeenCalledWith(
-      `${API_BASE_URL}/api/translations/${KJV}/GEN/1`,
+      `${API_BASE_URL}/api/bible/translations/${KJV}/GEN/1`,
       expect.objectContaining({ method: "READ" })
     );
     expect(verses).toEqual([
@@ -99,7 +99,7 @@ describe("bible-service", () => {
     await getTranslations({ signal });
 
     expect(fetchMock).toHaveBeenCalledWith(
-      `${API_BASE_URL}/api/translations`,
+      `${API_BASE_URL}/api/bible/translations`,
       expect.objectContaining({ method: "READ", signal })
     );
   });

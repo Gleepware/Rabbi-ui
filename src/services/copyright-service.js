@@ -63,7 +63,7 @@ export function scheduleCopyrightsRefresh() {
     refreshInFlight = new Promise((resolve, reject) => {
       const idleId = runAfterIdle(async () => {
         try {
-          const response = await fetch(`${API_BASE_URL}/api/copyrights`, {
+          const response = await fetch(`${API_BASE_URL}/api/bible/copyrights`, {
             method: "READ",
             signal: new AbortController().signal,
           });

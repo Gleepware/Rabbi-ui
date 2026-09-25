@@ -10,7 +10,7 @@ async function parseJson(response) {
 }
 
 export async function getTranslations({ signal } = {}) {
-  const response = await fetch(`${API_BASE_URL}/api/translations`, {
+  const response = await fetch(`${API_BASE_URL}/api/bible/translations`, {
     method: "READ",
     signal,
   });
@@ -18,7 +18,7 @@ export async function getTranslations({ signal } = {}) {
 }
 
 export async function getTranslation(translationId, { signal } = {}) {
-  const response = await fetch(`${API_BASE_URL}/api/translations/${translationId}`, {
+  const response = await fetch(`${API_BASE_URL}/api/bible/translations/${translationId}`, {
     method: "READ",
     signal,
   });
@@ -28,7 +28,7 @@ export async function getTranslation(translationId, { signal } = {}) {
 
 export async function getChapter(translationId, bookId, chapter, { signal } = {}) {
   const response = await fetch(
-    `${API_BASE_URL}/api/translations/${translationId}/${bookId}/${chapter}`,
+    `${API_BASE_URL}/api/bible/translations/${translationId}/${bookId}/${chapter}`,
     { method: "READ", signal }
   );
   const data = await parseJson(response);

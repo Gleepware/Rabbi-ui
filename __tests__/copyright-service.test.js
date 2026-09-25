@@ -53,7 +53,7 @@ describe("scheduleCopyrightsRefresh", () => {
     const result = await scheduleCopyrightsRefresh();
 
     expect(fetchMock).toHaveBeenCalledTimes(1);
-    expect(fetchMock).toHaveBeenCalledWith(`${API_BASE_URL}/api/copyrights`, expect.objectContaining({ method: "READ" }));
+    expect(fetchMock).toHaveBeenCalledWith(`${API_BASE_URL}/api/bible/copyrights`, expect.objectContaining({ method: "READ" }));
     expect(result.data).toEqual(DATA);
     expect(result.retrievedAt).toBeLessThanOrEqual(Date.now());
     expect(result.expiresAt).toBe(result.retrievedAt + COPYRIGHTS_TTL_MS);
