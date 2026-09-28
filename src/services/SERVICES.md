@@ -349,6 +349,17 @@ carries on. A corrupt or malformed entry is treated as a miss and removed.
 Legacy keys from the previous flat layout (`bible-cache-index`, `bible-cache:*`,
 `copyrights-cache`) are swept once on module load.
 
+### Sharing the quota with app state
+
+`appState` (see `AppContext.jsx`) draws on the same origin-wide localStorage
+budget as these keys, and it holds data that cannot be refetched — the reader
+selection, bookmarks, and conversations. So the two layers have a priority
+order: when an `appState` write fails, it calls `reclaimChapterBytes()` to drop
+the least recently used chapters across all translations and retries.
+Eviction is confined to chapters on purpose — books, `bible:translations`, and
+`bible:copyrights` are never reclaimed, so a full store can never leave the
+content selectors empty.
+
 ---
 
 ## Error responses

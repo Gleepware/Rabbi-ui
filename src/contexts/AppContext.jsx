@@ -1,6 +1,7 @@
 "use client";
 
 import { createContext, useContext, useReducer, useEffect, useCallback, useRef, useState } from "react";
+import { reclaimChapterBytes } from "../services/bible-cache";
 
 const STORAGE_KEY = "appState";
 
@@ -24,10 +25,23 @@ function readStorage() {
 }
 
 function writeStorage(state) {
+  const serialized = JSON.stringify(state);
   try {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+    localStorage.setItem(STORAGE_KEY, serialized);
+    return true;
   } catch {
-    // storage unavailable or full
+    // The bible cache shares this origin's quota. Cached chapters can be
+    // refetched but this state cannot be rebuilt, so the cache yields first.
+    for (let attempt = 0; attempt < 4; attempt++) {
+      if (reclaimChapterBytes(serialized.length * 2) === 0) break;
+      try {
+        localStorage.setItem(STORAGE_KEY, serialized);
+        return true;
+      } catch {
+        // still full; evict more and try again
+      }
+    }
+    return false;
   }
 }
 

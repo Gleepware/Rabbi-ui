@@ -10,6 +10,7 @@ import {
   readCopyrights,
   readTranslationBooks,
   readTranslations,
+  reclaimChapterBytes,
   sweepLegacyCacheKeys,
   translationCacheKey,
   writeChapter,
@@ -175,6 +176,37 @@ describe("bible-cache", () => {
     expect(readChapter(KJV, "GEN", 1)).toBeNull();
     expect(readChapter(KJV, "GEN", 2).data).toEqual([{ verse: 2 }]);
     setItem.mockRestore();
+  });
+
+  it("reclaims the least recently used chapters and spares books and lists", () => {
+    writeTranslations([{ id: KJV, name: "KJV" }]);
+    writeCopyrights([{ id: KJV }]);
+    const fat = [{ verse: 1, text: "x".repeat(200) }];
+    const chapters = {};
+    for (let chapter = 1; chapter <= 5; chapter++) {
+      chapters[`GEN:${chapter}`] = {
+        data: fat,
+        retrievedAt: chapter,
+        expiresAt: 2,
+        accessedAt: chapter,
+      };
+    }
+    setItem(translationCacheKey(KJV), { books: { data: [{ id: "GEN" }], retrievedAt: 1, expiresAt: 2 }, chapters });
+
+    const freed = reclaimChapterBytes(1);
+
+    expect(freed).toBeGreaterThan(0);
+    expect(readChapter(KJV, "GEN", 1)).toBeNull();
+    expect(readChapter(KJV, "GEN", 5).data).toEqual(fat);
+    expect(readTranslationBooks(KJV).data).toEqual([{ id: "GEN" }]);
+    expect(readTranslations().data).toEqual([{ id: KJV, name: "KJV" }]);
+    expect(readCopyrights().data).toEqual([{ id: KJV }]);
+  });
+
+  it("reclaims nothing when there are no chapters to give up", () => {
+    writeTranslations([{ id: KJV, name: "KJV" }]);
+    expect(reclaimChapterBytes(1000)).toBe(0);
+    expect(readTranslations().data).toEqual([{ id: KJV, name: "KJV" }]);
   });
 
   it("still returns the bundle when storage rejects every write", () => {
