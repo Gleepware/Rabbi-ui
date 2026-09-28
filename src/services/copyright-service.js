@@ -1,19 +1,16 @@
-const COPYRIGHTS_CACHE_KEY = "copyrights-cache";
-const COPYRIGHTS_TTL_MS = 30 * 24 * 60 * 60 * 1000;
+import { COPYRIGHTS_TTL, readCopyrights, writeCopyrights } from "./bible-cache";
+
+const COPYRIGHTS_CACHE_KEY = "bible:copyrights";
+const COPYRIGHTS_TTL_MS = COPYRIGHTS_TTL;
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL ?? "http://localhost:8080";
 
 let refreshInFlight = null;
 
 function readCache() {
-  try {
-    const raw = localStorage.getItem(COPYRIGHTS_CACHE_KEY);
-    if (!raw) return null;
-    const cached = JSON.parse(raw);
-    if (!cached || !Array.isArray(cached.data)) return null;
-    return cached;
-  } catch {
-    return null;
-  }
+  const entry = readCopyrights();
+  if (!entry || !Array.isArray(entry.data)) return null;
+  const { data, retrievedAt, expiresAt } = entry;
+  return { data, retrievedAt, expiresAt };
 }
 
 function isExpired(cached) {
@@ -21,18 +18,7 @@ function isExpired(cached) {
 }
 
 function writeCache(data) {
-  const retrievedAt = Date.now();
-  const bundle = {
-    data,
-    retrievedAt,
-    expiresAt: retrievedAt + COPYRIGHTS_TTL_MS,
-  };
-  try {
-    localStorage.setItem(COPYRIGHTS_CACHE_KEY, JSON.stringify(bundle));
-  } catch {
-    // storage unavailable; the in-memory bundle is still returned
-  }
-  return bundle;
+  return writeCopyrights(data);
 }
 
 function runAfterIdle(task) {

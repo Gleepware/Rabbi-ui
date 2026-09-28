@@ -228,6 +228,29 @@ body {
   color: inherit;
 }
 
+.loading-indicator {
+  display: inline-block;
+  flex-shrink: 0;
+  box-sizing: border-box;
+  border: 2px solid currentColor;
+  border-right-color: transparent;
+  border-radius: 50%;
+  opacity: 0.6;
+  animation: loading-indicator-spin 0.7s linear infinite;
+}
+
+@keyframes loading-indicator-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .loading-indicator {
+    animation: none;
+  }
+}
+
 .conversation {
   display: flex;
   flex-direction: column;
@@ -261,6 +284,12 @@ body {
   align-self: flex-start;
   border: 1px solid var(--foreground);
   color: var(--foreground);
+}
+
+.conversation-bubble-pending {
+  display: flex;
+  align-items: center;
+  min-height: 1.4em;
 }
 
 .conversation-input {
@@ -303,6 +332,11 @@ body {
   color: var(--background);
 }
 
+.conversation-send:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
 .conversation-error {
   padding: 8px;
   color: #c0392b;
@@ -331,6 +365,15 @@ body {
 
 .content-selector-select:disabled {
   opacity: 0.5;
+}
+
+.content-selector-status {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 14px;
+  height: 1.5rem;
+  flex-shrink: 0;
 }
 
 .chapter-pill {

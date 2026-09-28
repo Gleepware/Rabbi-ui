@@ -1,5 +1,6 @@
 import { useState, useRef, useEffect } from "react";
 import ContentPanel from "../content-panel";
+import LoadingIndicator from "../loading-indicator";
 import { askQuestion, createConversation, getConversation, updateConversation } from "../../services/conversation-service";
 
 const MAX_TITLE_LENGTH = 40;
@@ -8,6 +9,7 @@ export default function Conversation({ conversation, onConversationCreated, onCo
   const [messages, setMessages] = useState(conversation?.messages ?? []);
   const [input, setInput] = useState("");
   const [error, setError] = useState(null);
+  const [sending, setSending] = useState(false);
   const messagesEndRef = useRef(null);
   const prevConversationIdRef = useRef(null);
 
@@ -25,10 +27,11 @@ export default function Conversation({ conversation, onConversationCreated, onCo
 
   async function onMessageSend() {
     const text = input.trim();
-    if (!text) return;
+    if (!text || sending) return;
     setMessages((prev) => [...prev, { role: "user", text }]);
     setInput("");
     setError(null);
+    setSending(true);
 
     try {
       let conversationId = conversation?.id;
@@ -54,6 +57,8 @@ export default function Conversation({ conversation, onConversationCreated, onCo
       }
     } catch {
       setError("Could not send message.");
+    } finally {
+      setSending(false);
     }
   }
 
@@ -76,6 +81,11 @@ export default function Conversation({ conversation, onConversationCreated, onCo
           </div>
         ))}
         {error && <p className="conversation-error">{error}</p>}
+        {sending && (
+          <div className="conversation-bubble conversation-bubble-assistant conversation-bubble-pending">
+            <LoadingIndicator size={14} label="Rabbi is thinking" />
+          </div>
+        )}
         <div ref={messagesEndRef} />
       </ContentPanel>
       <div className="conversation-input">
@@ -87,7 +97,7 @@ export default function Conversation({ conversation, onConversationCreated, onCo
           rows={1}
           placeholder="Type a message..."
         />
-        <button className="conversation-send" onClick={onMessageSend}>
+        <button className="conversation-send" onClick={onMessageSend} disabled={sending}>
           Send
         </button>
       </div>

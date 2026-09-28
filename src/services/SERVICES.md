@@ -305,6 +305,52 @@ Books are sorted in canonical biblical order. Book IDs use the [API.Bible](https
 
 ---
 
+## Local cache
+
+`bible-cache.js` owns the browser-side cache. Reads and writes are layered: an
+in-memory cache in `use-bible-service.js` is consulted first, then localStorage.
+A localStorage hit past its TTL is still returned immediately and triggers a
+silent background refetch.
+
+### Keys
+
+| Key | Value | TTL |
+|-----|-------|-----|
+| `bible:copyrights` | copyright entries | 30 days |
+| `bible:translations` | translation list | 12 hours |
+| `bible:translation:<translationId>` | `books` fragment + `chapters` map | see below |
+
+Each translation gets exactly one key. Its value holds two independent
+fragments, which is why the key itself carries no single expiry:
+
+```json
+{
+  "books": { "data": [], "retrievedAt": 0, "expiresAt": 0 },
+  "chapters": {
+    "GEN:1": { "data": [], "retrievedAt": 0, "expiresAt": 0, "accessedAt": 0 }
+  }
+}
+```
+
+`books` expires after 7 days; each chapter expires after 30 days.
+
+### Eviction
+
+Chapters are capped at `MAX_CHAPTERS_PER_TRANSLATION` (50) per translation,
+evicting the least recently `accessedAt`. There is no global cap across
+translations, so a write never has to read or rewrite a sibling key. Each
+chapter write re-serializes that translation's whole key, which is why the cap
+is kept low.
+
+On a quota error a write evicts its own translation's oldest chapters and
+retries; if it still will not fit, the write is dropped and the in-memory layer
+carries on. A corrupt or malformed entry is treated as a miss and removed.
+
+Legacy keys from the previous flat layout (`bible-cache-index`, `bible-cache:*`,
+`copyrights-cache`) are swept once on module load.
+
+---
+
 ## Error responses
 
 All endpoints return errors in this shape:
