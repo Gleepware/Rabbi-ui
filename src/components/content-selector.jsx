@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import { useBibleService } from "../hooks/use-bible-service";
 import { useReaderContext, useNavigationContext } from "../contexts/AppContext";
+import LoadingIndicator from "./loading-indicator";
 import { ChevronLeftIcon, ChevronRightIcon } from "./icons";
 
 export default function ContentSelector() {
@@ -25,21 +26,34 @@ export default function ContentSelector() {
   const setReader = (patch) =>
     setUiState("reader", { ...reader, ...patch });
 
-  const { translations, translationBooks, setTranslation, setBook, setChapter } =
-    useBibleService({
-      translationId,
-      bookId,
-      chapter,
-      onChange: ({ translationId: t, bookId: b, chapter: c }) =>
-        setUiState("reader", { translationId: t, bookId: b, chapter: c }),
-      onTranslationLoaded: (list) => {
-        if (!readerRef.current.translationId && list.length > 0) {
-          setReader({ translationId: list[0].id, bookId: null, chapter: 1 });
-        }
-      },
-    });
+  const {
+    translations,
+    translationBooks,
+    error,
+    loadingTranslations,
+    loadingBooks,
+    loadingVerses,
+    setTranslation,
+    setBook,
+    setChapter,
+  } = useBibleService({
+    enabled: hydrated,
+    translationId,
+    bookId,
+    chapter,
+    onChange: ({ translationId: t, bookId: b, chapter: c }) =>
+      setUiState("reader", { translationId: t, bookId: b, chapter: c }),
+    onTranslationLoaded: (list) => {
+      if (!readerRef.current.translationId && list.length > 0) {
+        setReader({ translationId: list[0].id, bookId: null, chapter: 1 });
+      }
+    },
+  });
 
   const books = translationBooks;
+  const selectorLoading = loadingTranslations || loadingBooks || loadingVerses;
+  const translationsUnavailable =
+    error?.type === "translations" && translations.length === 0;
 
   const selectedTranslation =
     translations.find((t) => t.id === translationId) ?? null;
@@ -111,7 +125,7 @@ export default function ContentSelector() {
         aria-label="Translation"
       >
         <option value="" disabled>
-          Translation
+          {translationsUnavailable ? "Unavailable" : "Translation"}
         </option>
         {translations.map((t) => (
           <option key={t.id} value={t.id}>
@@ -126,7 +140,7 @@ export default function ContentSelector() {
         value={bookId ?? ""}
         onChange={onBookChange}
         aria-label="Book"
-        disabled={!translationId}
+        disabled={!translationId || loadingBooks}
       >
         <option value="" disabled>
           Book
@@ -142,7 +156,7 @@ export default function ContentSelector() {
           className="chapter-pill-btn"
           aria-label="Previous chapter"
           onClick={() => onChapterChange(-1)}
-          disabled={chapter <= 1}
+          disabled={chapter <= 1 || loadingVerses}
         >
           <ChevronLeftIcon />
         </button>
@@ -151,7 +165,7 @@ export default function ContentSelector() {
           value={chapter}
           onChange={(e) => setChapter(Number(e.target.value))}
           aria-label="Chapter"
-          disabled={!bookId}
+          disabled={!bookId || loadingVerses}
         >
           {Array.from({ length: chapterCount }, (_, i) => i + 1).map((n) => (
             <option key={n} value={n}>
@@ -163,11 +177,14 @@ export default function ContentSelector() {
           className="chapter-pill-btn"
           aria-label="Next chapter"
           onClick={() => onChapterChange(1)}
-          disabled={chapter >= chapterCount}
+          disabled={chapter >= chapterCount || loadingVerses}
         >
           <ChevronRightIcon />
         </button>
       </div>
+      <span className="content-selector-status">
+        {selectorLoading && <LoadingIndicator size={12} label="Loading content" />}
+      </span>
     </div>
   );
 }

@@ -1,7 +1,8 @@
-import { render, screen } from "@testing-library/react";
+import { render, screen, waitFor } from "@testing-library/react";
 import { vi } from "vitest";
 import { AppProvider } from "../src/contexts/AppContext";
 import ReaderPage from "../src/components/reader-page";
+import * as bibleService from "../src/services/bible-service";
 
 vi.mock("../src/services/bible-service", () => {
   const KJV = "de4e12af7f28f599-01";
@@ -91,4 +92,23 @@ test("warns when the chapter does not exist in the selected book", async () => {
   expect(
     await screen.findByText("This chapter does not exist in the selected book.")
   ).toBeInTheDocument();
+});
+
+test("shows a loading indicator until the chapter arrives", async () => {
+  let release;
+  const pending = new Promise((resolve) => {
+    release = resolve;
+  });
+  bibleService.getChapter.mockImplementation((translationId, bookId, chapter) =>
+    chapter === 2 ? pending : Promise.resolve([])
+  );
+
+  renderReader({ translationId: KJV, bookId: "GEN", chapter: 2 });
+
+  expect(await screen.findByRole("status", { name: "Loading chapter" })).toBeInTheDocument();
+
+  release([]);
+  await waitFor(() =>
+    expect(screen.queryByRole("status", { name: "Loading chapter" })).not.toBeInTheDocument()
+  );
 });

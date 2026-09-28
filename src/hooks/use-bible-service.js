@@ -6,10 +6,17 @@ import {
   getTranslation,
   getChapter,
 } from "../services/bible-service";
-
-const TRANSLATIONS_TTL = 5 * 60 * 1000;
-const BOOKS_TTL = 10 * 60 * 1000;
-const CHAPTERS_TTL = 10 * 60 * 1000;
+import {
+  BOOKS_TTL,
+  CHAPTERS_TTL,
+  TRANSLATIONS_TTL,
+  readChapter,
+  readTranslationBooks,
+  readTranslations,
+  writeChapter,
+  writeTranslationBooks,
+  writeTranslations,
+} from "../services/bible-cache";
 
 const cache = {
   translations: { data: null, timestamp: 0, ttl: TRANSLATIONS_TTL },
@@ -37,6 +44,14 @@ function getCached(map, key) {
     return undefined;
   }
   return entry.data;
+}
+
+function readLayered(memory, read) {
+  const fresh = memory();
+  if (fresh !== undefined) return { data: fresh, isStale: false };
+  const entry = read();
+  if (entry === null) return undefined;
+  return { data: entry.data, isStale: entry.isStale };
 }
 
 function dedupe(pendingMap, key, fetchFn) {
@@ -77,16 +92,28 @@ function useAsyncResource({
     let controller = null;
     if (!enabled) {
       setData([]);
+      setLoading(false);
       onSkip?.();
     } else {
+      setError((e) => (e?.type === errorType ? null : e));
       const cached = cacheRead();
       if (cached !== undefined) {
-        setData(cached);
-        onLoaded?.(cached);
+        setLoading(false);
+        setData(cached.data);
+        onLoaded?.(cached.data);
+        if (cached.isStale) {
+          load(new AbortController().signal)
+            .then((data) => {
+              cacheWrite(data);
+              if (cancelled) return;
+              setData(data);
+              onLoaded?.(data);
+            })
+            .catch(() => {});
+        }
       } else {
         controller = new AbortController();
         setLoading(true);
-        setError((e) => (e?.type === errorType ? null : e));
         load(controller.signal)
           .then((data) => {
             if (cancelled) return;
@@ -113,6 +140,7 @@ function useAsyncResource({
 }
 
 export function useBibleService({
+  enabled = true,
   translationId,
   bookId,
   chapter,
@@ -152,10 +180,15 @@ export function useBibleService({
   });
 
   useAsyncResource({
-    enabled: true,
-    cacheRead: () => (isFresh(cache.translations) ? cache.translations.data : undefined),
+    enabled,
+    cacheRead: () =>
+      readLayered(
+        () => (isFresh(cache.translations) ? cache.translations.data : undefined),
+        readTranslations
+      ),
     cacheWrite: (list) => {
       cache.translations = { data: list, timestamp: Date.now(), ttl: TRANSLATIONS_TTL };
+      writeTranslations(list);
     },
     load: (signal) => getTranslations({ signal }),
     setData: setTranslations,
@@ -163,13 +196,20 @@ export function useBibleService({
     setError,
     errorType: "translations",
     onLoaded: (list) => onTranslationLoadedRef.current?.(list),
-    deps: [],
+    deps: [enabled],
   });
 
   useAsyncResource({
-    enabled: !!translationId,
-    cacheRead: () => getCached(cache.translationBooks, translationId),
-    cacheWrite: (books) => setCached(cache.translationBooks, translationId, books, BOOKS_TTL),
+    enabled: enabled && !!translationId,
+    cacheRead: () =>
+      readLayered(
+        () => getCached(cache.translationBooks, translationId),
+        () => readTranslationBooks(translationId)
+      ),
+    cacheWrite: (books) => {
+      setCached(cache.translationBooks, translationId, books, BOOKS_TTL);
+      writeTranslationBooks(translationId, books);
+    },
     load: (signal) =>
       dedupe(pending.translationBooks, translationId, () =>
         getTranslation(translationId, { signal }).then((translation) => translation?.books ?? [])
@@ -180,15 +220,22 @@ export function useBibleService({
     errorType: "books",
     onLoaded: (books) => onBooksLoadedRef.current?.(books),
     onSkip: () => setLoadingBooks(false),
-    deps: [translationId],
+    deps: [enabled, translationId],
   });
 
   const currentChapter = chapter ?? 1;
   const verseKey = `${translationId}:${bookId}:${currentChapter}`;
   useAsyncResource({
-    enabled: !!translationId && !!bookId,
-    cacheRead: () => getCached(cache.chapters, verseKey),
-    cacheWrite: (data) => setCached(cache.chapters, verseKey, data, CHAPTERS_TTL),
+    enabled: enabled && !!translationId && !!bookId,
+    cacheRead: () =>
+      readLayered(
+        () => getCached(cache.chapters, verseKey),
+        () => readChapter(translationId, bookId, currentChapter)
+      ),
+    cacheWrite: (data) => {
+      setCached(cache.chapters, verseKey, data, CHAPTERS_TTL);
+      writeChapter(translationId, bookId, currentChapter, data);
+    },
     load: (signal) =>
       dedupe(pending.chapters, verseKey, () =>
         getChapter(translationId, bookId, currentChapter, { signal })
@@ -210,7 +257,7 @@ export function useBibleService({
     onCleanup: () => {
       verseKeyRef.current = null;
     },
-    deps: [translationId, bookId, chapter],
+    deps: [enabled, translationId, bookId, chapter],
   });
 
   const setTranslation = useCallback(

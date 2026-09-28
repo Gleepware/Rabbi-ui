@@ -1,5 +1,6 @@
 import { useNavigationContext } from "../contexts/AppContext";
 import { useBibleService } from "../hooks/use-bible-service";
+import LoadingIndicator from "./loading-indicator";
 import { CloseXIcon } from "./icons";
 
 export default function ReaderPage() {
@@ -39,7 +40,7 @@ export default function ReaderPage() {
     );
   }
 
-  if (error?.type === "verses") {
+  if (error?.type === "verses" && verses.length === 0) {
     return (
       <div className="p-4 text-center opacity-70">
         Could not load this chapter. Please try again.
@@ -49,8 +50,9 @@ export default function ReaderPage() {
 
   if (loadingVerses && verses.length === 0) {
     return (
-      <div className="p-4 text-center opacity-50">
-        Loading...
+      <div className="flex items-center justify-center gap-2 p-4 opacity-60">
+        <LoadingIndicator size={14} label="Loading chapter" />
+        <span>Loading...</span>
       </div>
     );
   }
@@ -68,6 +70,12 @@ export default function ReaderPage() {
           >
             <CloseXIcon size={16} />
           </button>
+        </div>
+      )}
+      {loadingVerses && (
+        <div className="flex items-center justify-center gap-2 py-1 text-xs opacity-60">
+          <LoadingIndicator size={10} label="Updating chapter" />
+          <span>Updating...</span>
         </div>
       )}
       <div className="p-4">

@@ -1,4 +1,4 @@
-import { render, screen } from "@testing-library/react";
+import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { vi } from "vitest";
 import { AppProvider } from "../src/contexts/AppContext";
@@ -46,4 +46,22 @@ test("sending a message creates a conversation and shows the exchange", async ()
   expect(
     await screen.findByText(/This is a mock response to: "Hello Rabbi"/)
   ).toBeInTheDocument();
+});
+
+test("shows a pending indicator and blocks re-sending while the answer is loading", async () => {
+  const user = userEvent.setup();
+  renderConversations();
+
+  const send = await screen.findByRole("button", { name: "Send" });
+  await user.type(screen.getByPlaceholderText("Type a message..."), "Hello again");
+  await user.click(send);
+
+  expect(await screen.findByRole("status", { name: "Rabbi is thinking" })).toBeInTheDocument();
+  expect(send).toBeDisabled();
+
+  expect(
+    await screen.findByText(/This is a mock response to: "Hello again"/)
+  ).toBeInTheDocument();
+  await waitFor(() => expect(send).toBeEnabled());
+  expect(screen.queryByRole("status", { name: "Rabbi is thinking" })).not.toBeInTheDocument();
 });
