@@ -29,6 +29,8 @@ export default function ContentSelector() {
   const {
     translations,
     translationBooks,
+    error,
+    loadingTranslations,
     loadingBooks,
     loadingVerses,
     setTranslation,
@@ -49,7 +51,9 @@ export default function ContentSelector() {
   });
 
   const books = translationBooks;
-  const selectorLoading = loadingBooks || loadingVerses;
+  const selectorLoading = loadingTranslations || loadingBooks || loadingVerses;
+  const translationsUnavailable =
+    error?.type === "translations" && translations.length === 0;
 
   const selectedTranslation =
     translations.find((t) => t.id === translationId) ?? null;
@@ -121,7 +125,7 @@ export default function ContentSelector() {
         aria-label="Translation"
       >
         <option value="" disabled>
-          Translation
+          {translationsUnavailable ? "Unavailable" : "Translation"}
         </option>
         {translations.map((t) => (
           <option key={t.id} value={t.id}>

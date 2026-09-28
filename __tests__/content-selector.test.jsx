@@ -70,3 +70,20 @@ test("lists translations and books when nothing is cached", async () => {
   await waitFor(() => expect(optionLabels("Book")).toContain("Genesis"));
   expect(screen.getByLabelText("Translation")).toHaveValue(KJV);
 });
+
+test("reports an unavailable translation list instead of showing an empty dropdown", async () => {
+  // Step past the in-memory TTL so the request actually goes out and fails.
+  const dateSpy = vi
+    .spyOn(Date, "now")
+    .mockReturnValue(Date.now() + 13 * 60 * 60 * 1000);
+  bibleService.getTranslations.mockRejectedValue(
+    new Error("Bible request failed with status 502.")
+  );
+
+  renderSelector();
+
+  expect(await screen.findByRole("option", { name: "Unavailable" })).toBeInTheDocument();
+  expect(optionLabels("Translation")).toEqual(["Unavailable"]);
+  expect(screen.queryByRole("status", { name: "Loading content" })).not.toBeInTheDocument();
+  dateSpy.mockRestore();
+});
