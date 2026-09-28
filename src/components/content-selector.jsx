@@ -35,6 +35,7 @@ export default function ContentSelector() {
     setBook,
     setChapter,
   } = useBibleService({
+    enabled: hydrated,
     translationId,
     bookId,
     chapter,

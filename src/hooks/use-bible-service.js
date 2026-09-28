@@ -140,6 +140,7 @@ function useAsyncResource({
 }
 
 export function useBibleService({
+  enabled = true,
   translationId,
   bookId,
   chapter,
@@ -179,7 +180,7 @@ export function useBibleService({
   });
 
   useAsyncResource({
-    enabled: true,
+    enabled,
     cacheRead: () =>
       readLayered(
         () => (isFresh(cache.translations) ? cache.translations.data : undefined),
@@ -195,11 +196,11 @@ export function useBibleService({
     setError,
     errorType: "translations",
     onLoaded: (list) => onTranslationLoadedRef.current?.(list),
-    deps: [],
+    deps: [enabled],
   });
 
   useAsyncResource({
-    enabled: !!translationId,
+    enabled: enabled && !!translationId,
     cacheRead: () =>
       readLayered(
         () => getCached(cache.translationBooks, translationId),
@@ -219,13 +220,13 @@ export function useBibleService({
     errorType: "books",
     onLoaded: (books) => onBooksLoadedRef.current?.(books),
     onSkip: () => setLoadingBooks(false),
-    deps: [translationId],
+    deps: [enabled, translationId],
   });
 
   const currentChapter = chapter ?? 1;
   const verseKey = `${translationId}:${bookId}:${currentChapter}`;
   useAsyncResource({
-    enabled: !!translationId && !!bookId,
+    enabled: enabled && !!translationId && !!bookId,
     cacheRead: () =>
       readLayered(
         () => getCached(cache.chapters, verseKey),
@@ -256,7 +257,7 @@ export function useBibleService({
     onCleanup: () => {
       verseKeyRef.current = null;
     },
-    deps: [translationId, bookId, chapter],
+    deps: [enabled, translationId, bookId, chapter],
   });
 
   const setTranslation = useCallback(
